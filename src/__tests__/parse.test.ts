@@ -1,9 +1,10 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
+// @ts-expect-error
 import { parse as spcParse } from 'spc-parser';
 
-import { parse } from '../parse.js';
+import { parse } from '../parse';
 
 describe('parse', () => {
   it('6x6', () => {
