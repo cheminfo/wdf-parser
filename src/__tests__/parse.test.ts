@@ -1,22 +1,24 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import {readFileSync} from 'fs';
+import {join} from 'path';
 
 // @ts-expect-error
-import { parse as spcParse } from 'spc-parser';
+import {parse as spcParse} from 'spc-parser';
 
-import { parse } from '../parse';
+import {parse} from '../parse';
+import {btypes} from '../blockTypes';
 
 describe('parse', () => {
   it('6x6', () => {
     const wdf = readFileSync(join(__dirname, 'data/6x6.wdf'));
     const result = parse(wdf);
-    //console.log(result);
+    console.log(result)
+    expect(result).toEqual({signature:btypes["WDF_BLOCKID_FILE"], version:1, size:512})
 
     // we have another parser that should give a pretty similar result
-    const spc = readFileSync(join(__dirname, 'data/6x6.spc'));
-    const resultSPC = spcParse(spc);
+    //const spc = readFileSync(join(__dirname, 'data/6x6.spc'));
+   // const resultSPC = spcParse(spc);
     //console.log(resultSPC);
 
-    expect(true).toBe(true);
+    //expect(true).toBe(true);
   });
 });
