@@ -12,14 +12,14 @@ describe('parse', () => {
     const wdf = readFileSync(join(__dirname, 'data/6x6.wdf'));
     const result = parse(wdf);
     expect(result).toMatchObject({
-      appname:"WiRE",
+      appname: 'WiRE',
       signature: 0x31464457,
       version: 1,
       size: 512,
-      spare:[0,0,0,0,0,0],
-      title:"Simple mapping measurement 1",
-      user:"Raman"
-  });
+      spare: [0, 0, 0, 0, 0, 0],
+      title: 'Simple mapping measurement 1',
+      user: 'Raman',
+    });
     // we have another parser that should give a pretty similar result
     // const spc = readFileSync(join(__dirname, 'data/6x6.spc'));
     // const resultSPC = spcParse(spc);
