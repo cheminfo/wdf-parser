@@ -1,7 +1,7 @@
 import { IOBuffer } from 'iobuffer';
 
 import { btypes } from './blockTypes';
-import { readGroupOfBytes } from './utilities';
+import { readBytes64 } from './utilities';
 // Custom Types
 export interface AppVersion {
   [key: string]: number;
@@ -46,11 +46,8 @@ export interface ParsedHeader {
  * @return {AppVersion} Object containing WDF semantic versioning
  */
 function appVersion(buffer: IOBuffer): AppVersion {
-  const major = buffer.readUint16();
-  const minor = buffer.readUint16();
-  const patch = buffer.readUint16();
-  const build = buffer.readUint16();
-  return { major, minor, patch, build };
+const [major,minor,patch,build] = new Uint16Array(buffer.readBytes(8));
+return { major, minor, patch, build }
 }
 
 /**
@@ -59,11 +56,8 @@ function appVersion(buffer: IOBuffer): AppVersion {
  * @return {string} uuid as a string
  */
 function uuid(buffer: IOBuffer): string {
-  let id: number[] = [];
-  for (let i = 0; i < 4; i++) {
-    id.push(buffer.readUint32());
-  }
-  return id.join('.');
+let version = new Uint32Array(buffer.readBytes(16))
+return version.join('.')
 }
 
 /**
@@ -123,27 +117,27 @@ export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
   parsedHeader.units =
     buffer.readUint32(); /* spectral data units (one of WdfDataUnits) */
   parsedHeader.laserwavenum = buffer.readFloat32(); /* laser wavenumber */
-  parsedHeader.spare = readGroupOfBytes(buffer, 6, 'readBigUint64');
+  parsedHeader.spare = readBytes64(buffer, 6, BigUint64Array);
   parsedHeader.user = buffer
     .readUtf8(32)
     .replace(/\x00/g, ''); /* utf-8 encoded user name */
   parsedHeader.title = buffer
     .readUtf8(160)
     .replace(/\x00/g, ''); /* utf-8 encoded user name */
-  parsedHeader.padding = readGroupOfBytes(
+  parsedHeader.padding = readBytes64(
     buffer,
     6,
-    'readBigUint64',
+    BigUint64Array,
   ); /*padded to 512 bytes*/
-  parsedHeader.free = readGroupOfBytes(
+  parsedHeader.free = readBytes64(
     buffer,
     4,
     'readBigUint64',
   ); /*available for third party use */
-  parsedHeader.reserved = readGroupOfBytes(
+  parsedHeader.reserved = readBytes64(
     buffer,
     4,
-    'readBigUint64',
+    BigUint64Array,
   ); /*reserved for internal use by WiRE */
   return parsedHeader as ParsedHeader;
 }

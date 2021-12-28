@@ -1,42 +1,35 @@
 import { IOBuffer } from 'iobuffer';
+import { IntArraySupportOption } from 'prettier';
 
-export type ReadGroupsOfBytes = (
+export type ReadBytes64 = (
   buffer: IOBuffer,
   nGroups: number,
-  IOFn: string,
+  typedArrayConstructor:BigInt64ArrayConstructor|BigUint64ArrayConstructor,
 ) => number[];
 /**
- * Reads n groups of bytes (representing numbers) of certain length
+ * Reads n groups of bytes of certain length
  * @param {IOBuffer} buffer WDF buffer
- * @param {nGroups} number number of bytes
- * @param {IOFn} string name of IOBuffer static function for X-bits byte.
- * @return array of X-bit bytes.
+ * @param {number} nGroups number of bytes
+ * @param {TypedArrayConstructor} tArrayConstructor type of the constructor for the new array.
+ * @return {number[]} array of X-bit bytes.
  */
-export const readGroupOfBytes: ReadGroupsOfBytes = (buffer, nGroups, IOFn) => {
+export const readBytes64: ReadBytes64 = (buffer, nGroups, tArrayConstructor) => {
   if (nGroups === 0) {
     throw new Error('nGroups has to be different from 0');
   }
-  let groupOfBytes: number[] = [];
-  switch (IOFn) {
-    case 'readBigUint64':
-    case 'readBigInt64':
-      for (let i = 0; i < nGroups; i++) {
-        groupOfBytes.push(Number(buffer[IOFn]()));
+  let groupsOf64:number[]=[];
+  switch(tArrayConstructor){
+    case BigInt64Array:
+      for (let i=0; i<nGroups;i++){
+        groupsOf64.push(Number(buffer.readBigInt64()));
       }
-      break;
-    case 'readUint32':
-    case 'readInt32':
-    case 'readInt16':
-    case 'readUint16':
-      for (let i = 0; i < nGroups; i++) {
-        groupOfBytes.push(buffer[IOFn]());
+      return groupsOf64
+    case BigUint64Array:
+      for (let i=0; i<nGroups;i++){
+        groupsOf64.push(Number(buffer.readBigUint64()));
       }
-      break;
-    default:
-      throw new Error(
-        `${IOFn} not found. Only 64,32,16 bit functions are allowed.`,
-      );
-  }
-
-  return groupOfBytes;
-};
+      return groupsOf64;
+      default:
+        throw new Error(`${tArrayConstructor} is not a valid argument.`)
+}
+}
