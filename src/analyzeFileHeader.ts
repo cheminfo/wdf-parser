@@ -1,3 +1,4 @@
+/* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
 import { btypes } from './blockTypes';
@@ -71,10 +72,10 @@ export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
   parsedHeader.version =
     buffer.readUint32(); /* The version of this (wdf) specification used by this file. */
   parsedHeader.size = Number(
-    buffer.readBigUint64(),
+    buffer.readBigUint64()
   ); /* The size of this block (512bytes)*/
   parsedHeader.flags = Number(
-    buffer.readBigUint64(),
+    buffer.readBigUint64()
   ); /* flags from the Wdf flags enumeration */
   parsedHeader.uuid =
     uuid(buffer); /* a file unique identifier - never changed once allocated */
@@ -117,7 +118,7 @@ export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
   parsedHeader.units =
     buffer.readUint32(); /* spectral data units (one of WdfDataUnits) */
   parsedHeader.laserwavenum = buffer.readFloat32(); /* laser wavenumber */
-  parsedHeader.spare = readBytes64(buffer, 6, BigUint64Array);
+  parsedHeader.spare = readBytes64(buffer, 6);
   parsedHeader.user = buffer
     .readUtf8(32)
     .replace(/\x00/g, ''); /* utf-8 encoded user name */
@@ -125,19 +126,10 @@ export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
     .readUtf8(160)
     .replace(/\x00/g, ''); /* utf-8 encoded user name */
   parsedHeader.padding = readBytes64(
-    buffer,
-    6,
-    BigUint64Array,
-  ); /*padded to 512 bytes*/
+    buffer, 6); /*padded to 512 bytes*/
   parsedHeader.free = readBytes64(
-    buffer,
-    4,
-    'readBigUint64',
-  ); /*available for third party use */
+    buffer, 4); /*available for third party use */
   parsedHeader.reserved = readBytes64(
-    buffer,
-    4,
-    BigUint64Array,
-  ); /*reserved for internal use by WiRE */
+    buffer, 4); /*reserved for internal use by WiRE */
   return parsedHeader as ParsedHeader;
 }
