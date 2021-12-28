@@ -47,8 +47,8 @@ export interface ParsedHeader {
  * @return {AppVersion} Object containing WDF semantic versioning
  */
 function appVersion(buffer: IOBuffer): AppVersion {
-const [major,minor,patch,build] = new Uint16Array(buffer.readBytes(8));
-return { major, minor, patch, build }
+  const [major, minor, patch, build] = new Uint16Array(buffer.readBytes(8));
+  return { major, minor, patch, build };
 }
 
 /**
@@ -57,8 +57,8 @@ return { major, minor, patch, build }
  * @return {string} uuid as a string
  */
 function uuid(buffer: IOBuffer): string {
-let version = new Uint32Array(buffer.readBytes(16))
-return version.join('.')
+  let version = new Uint32Array(buffer.readBytes(16));
+  return version.join('.');
 }
 
 /**
@@ -72,10 +72,10 @@ export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
   parsedHeader.version =
     buffer.readUint32(); /* The version of this (wdf) specification used by this file. */
   parsedHeader.size = Number(
-    buffer.readBigUint64()
+    buffer.readBigUint64(),
   ); /* The size of this block (512bytes)*/
   parsedHeader.flags = Number(
-    buffer.readBigUint64()
+    buffer.readBigUint64(),
   ); /* flags from the Wdf flags enumeration */
   parsedHeader.uuid =
     uuid(buffer); /* a file unique identifier - never changed once allocated */
@@ -125,11 +125,11 @@ export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
   parsedHeader.title = buffer
     .readUtf8(160)
     .replace(/\x00/g, ''); /* utf-8 encoded user name */
-  parsedHeader.padding = readBytes64(
-    buffer, 6); /*padded to 512 bytes*/
-  parsedHeader.free = readBytes64(
-    buffer, 4); /*available for third party use */
+  parsedHeader.padding = readBytes64(buffer, 6); /*padded to 512 bytes*/
+  parsedHeader.free = readBytes64(buffer, 4); /*available for third party use */
   parsedHeader.reserved = readBytes64(
-    buffer, 4); /*reserved for internal use by WiRE */
+    buffer,
+    4,
+  ); /*reserved for internal use by WiRE */
   return parsedHeader as ParsedHeader;
 }
