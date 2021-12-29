@@ -20,8 +20,8 @@ interface Wdf {
 /**
  * Parses an WDF file
  *
- * @param {IOBuffer} data WDF file buffer
- * @return {object} Object containing all the information from the WDF file
+ * @param data WDF file buffer
+ * @return Object containing all the information from the WDF file
  */
 export function parse(data: Buffer | ArrayBuffer): Wdf {
   const iobuffer = new IOBuffer(data);
