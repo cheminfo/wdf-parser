@@ -3,12 +3,13 @@ import { IOBuffer } from 'iobuffer';
 
 import { btypes } from './blockTypes';
 import { readBytes64 } from './utilities';
+
 // Custom Types
 export interface AppVersion {
   [key: string]: number;
 }
 export interface ParsedHeader {
-  signature: number;
+  signature: string;
   version: number;
   size: number;
   flags: number;
@@ -43,8 +44,8 @@ export interface ParsedHeader {
 // Utils
 /**
  * Build the semantic versioning
- * @param {IOBuffer} buffer WDF buffer
- * @return {AppVersion} Object containing WDF semantic versioning
+ * @param buffer WDF buffer
+ * @return Object containing WDF semantic versioning
  */
 function appVersion(buffer: IOBuffer): AppVersion {
   const [major, minor, patch, build] = new Uint16Array(buffer.readBytes(8));
@@ -53,8 +54,8 @@ function appVersion(buffer: IOBuffer): AppVersion {
 
 /**
  * Universal identifier (as a string) for the file
- * @param {IOBuffer} buffer WDF buffer
- * @return {string} uuid as a string
+ * @param buffer WDF buffer
+ * @return uuid as a string
  */
 function uuid(buffer: IOBuffer): string {
   let version = new Uint32Array(buffer.readBytes(16));
@@ -63,11 +64,11 @@ function uuid(buffer: IOBuffer): string {
 
 /**
  * Main buffer parsing - First 512 bytes
- * @param {IOBuffer} buffer WDF buffer
- * @return {object} File Metadata
+ * @param buffer WDF buffer
+ * @return File Metadata
  */
 export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
-  let parsedHeader: { [key: string]: any } = {};
+  let parsedHeader: ParsedHeader = <any>{};
   parsedHeader.signature = btypes(buffer.readUint32()); /* block id */
   parsedHeader.version =
     buffer.readUint32(); /* The version of this (wdf) specification used by this file. */
@@ -131,5 +132,5 @@ export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
     buffer,
     4,
   ); /*reserved for internal use by WiRE */
-  return parsedHeader as ParsedHeader;
+  return parsedHeader;
 }

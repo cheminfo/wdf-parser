@@ -1,7 +1,7 @@
 /**
  * Gives meaning to type codes
- * @param {number} blockId type code
- * @return {string} String corresponding to the code
+ * @param blockId type code
+ * @return Semantic label for block
  */
 export function btypes(blockId: number): string {
   switch (blockId) {
