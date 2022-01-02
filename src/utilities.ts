@@ -1,11 +1,14 @@
 import { IOBuffer } from 'iobuffer';
 
+// Types
+export interface AppVersion { [key: string]: number }
 export type ReadBytes64 = (buffer: IOBuffer, nGroups: number) => number[];
+
 /**
  * Reads n groups of bytes of certain length
- * @param {IOBuffer} buffer WDF buffer
- * @param {number} nGroups number of bytes
- * @return {number[]} array of X-bit bytes.
+ * @param buffer WDF buffer
+ * @param nGroups number of bytes
+ * @return array of X-bit bytes.
  */
 export const readBytes64: ReadBytes64 = (buffer, nGroups) => {
   if (nGroups === 0) {
@@ -17,3 +20,24 @@ export const readBytes64: ReadBytes64 = (buffer, nGroups) => {
   }
   return groupsOf64;
 };
+
+/**
+ * Build the semantic versioning
+ * @param buffer WDF buffer
+ * @return Object containing WDF semantic versioning
+ */
+export function getAppVersion(buffer: IOBuffer): AppVersion {
+  const [major, minor, patch, build] = new Uint16Array(buffer.readBytes(8));
+  return { major, minor, patch, build };
+}
+
+/**
+ * Universal identifier (as a string) for files and blocks
+ * @param buffer WDF buffer
+ * @param bytes number of bytes to read
+ * @return uuid as a string
+ */
+export function getUUId(buffer: IOBuffer, bytes:number=4): string {
+  let version = new Uint32Array(buffer.readBytes(bytes));
+  return version.join('.');
+}
