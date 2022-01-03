@@ -42,5 +42,5 @@ test('btypes return value at different inputs', (): void => {
   expect(btypes(0xffffffff)).toBe('WDF_BLOCKID_ANY');
   expect(btypes(0x54455350)).toBe('WDF_STREAM_IS_PSET');
   expect(btypes(0x4d545343)).toBe('WDF_STREAM_IS_CSTM');
-  expect(() => btypes(0x25)).toThrow('This blockId is not defined');
+  expect(() => btypes(0x25)).toThrow('blockId 37 is not defined');
 });

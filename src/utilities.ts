@@ -1,7 +1,9 @@
 import { IOBuffer } from 'iobuffer';
 
 // Types
-export interface AppVersion { [key: string]: number }
+export interface AppVersion {
+  [key: string]: number;
+}
 export type ReadBytes64 = (buffer: IOBuffer, nGroups: number) => number[];
 
 /**
@@ -27,7 +29,7 @@ export const readBytes64: ReadBytes64 = (buffer, nGroups) => {
  * @return Object containing WDF semantic versioning
  */
 export function getAppVersion(buffer: IOBuffer): AppVersion {
-  const [major, minor, patch, build] = new Uint16Array(buffer.readBytes(8));
+  const [major, minor, patch, build] = new Uint16Array(buffer.readBytes(8).buffer);
   return { major, minor, patch, build };
 }
 
@@ -37,7 +39,7 @@ export function getAppVersion(buffer: IOBuffer): AppVersion {
  * @param bytes number of bytes to read
  * @return uuid as a string
  */
-export function getUUId(buffer: IOBuffer, bytes:number=4): string {
-  let version = new Uint32Array(buffer.readBytes(bytes));
+export function getUUId(buffer: IOBuffer, bytes = 4): string {
+  let version = new Uint32Array(buffer.readBytes(bytes).buffer);
   return version.join('.');
 }

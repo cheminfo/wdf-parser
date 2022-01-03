@@ -3,18 +3,18 @@ import { join } from 'path';
 
 import { IOBuffer } from 'iobuffer';
 
-import { analyzeFileHeader } from '../analyzeFileHeader';
+import { readFileHeader } from '../readFileHeader';
 
 describe('parse file header', () => {
   it('6x6', () => {
     const wdf = readFileSync(join(__dirname, 'data/6x6.wdf'));
     const wdfBuffer = new IOBuffer(wdf);
-    const result = analyzeFileHeader(wdfBuffer);
+    const result = readFileHeader(wdfBuffer);
     expect(result).toMatchObject({
-      appname: 'WiRE',
+      appName: 'WiRE',
       signature: 'WDF_BLOCKID_FILE',
       version: 1,
-      size: 512,
+      fileHeaderSize: 512,
       spare: [0, 0, 0, 0, 0, 0],
       title: 'Simple mapping measurement 1',
       user: 'Raman',

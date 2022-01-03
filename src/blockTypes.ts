@@ -88,6 +88,6 @@ export function btypes(blockId: number): string {
     case 0x4d545343:
       return 'WDF_STREAM_IS_CSTM';
     default:
-      throw new Error('This blockId is not defined');
+      throw new Error(`blockId ${blockId} is not defined`);
   }
 }
