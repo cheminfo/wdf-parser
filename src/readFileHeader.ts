@@ -1,14 +1,23 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import { btypes } from './blockTypes';
-import { readBytes64, getUUId, getAppVersion, AppVersion } from './utilities';
+import { btypes } from './types';
+import {
+  readBytes64,
+  getUUId,
+  getMeasurementType,
+  getAppVersion,
+  getFlagParameters,
+  AppVersion,
+  FlagParameters,
+  MeasurementType,
+} from './utilities';
 
 export interface FileHeader {
   signature: string;
   version: number;
   fileHeaderSize: number;
-  flags: number;
+  flags: FlagParameters;
   uuid: string;
   unused0: number;
   unused1: number;
@@ -24,7 +33,7 @@ export interface FileHeader {
   appName: string;
   appVersion: AppVersion;
   scanType: number;
-  type: number;
+  type: MeasurementType;
   timeStart: number;
   timeEnd: number;
   units: number;
@@ -51,12 +60,10 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const fileHeaderSize = Number(
     buffer.readBigUint64(),
   ); /* The size of this file header block (512bytes)*/
-  const flags = Number(
-    buffer.readBigUint64(),
-  ); /* flags from the Wdf flags enumeration */
+  const flags = getFlagParameters(Number(buffer.readBigUint64()));
+  /* flags from the Wdf flags enumeration */
   const uuid: string = getUUId(
-    buffer,
-    16,
+    buffer.readBytes(16),
   ); /* a file unique identifier - never changed once allocated */
   const unused0 = Number(buffer.readBigUint64());
   const unused1 = buffer.readUint32();
@@ -79,10 +86,13 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const appName: string = buffer
     .readUtf8(24)
     .replace(/\x00/g, ''); /* application name (utf-8 encoded) */
-  const appVersion: AppVersion =
-    getAppVersion(buffer); /* application version (major,minor,patch,build) */
+  const appVersion: AppVersion = getAppVersion(
+    buffer.readBytes(8),
+  ); /* application version (major,minor,patch,build) */
   const scanType = buffer.readUint32(); /* scan type - WdfScanType enum  */
-  const type = buffer.readUint32(); /* measurement type - WdfType enum  */
+  const type: MeasurementType = getMeasurementType(
+    buffer.readUint32(),
+  ); /* measurement type - WdfType enum  */
   const timeStart = Number(
     buffer.readBigUint64(),
   ); /* collection start time as FILETIME */

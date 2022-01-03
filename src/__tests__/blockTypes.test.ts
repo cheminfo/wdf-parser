@@ -1,4 +1,4 @@
-import { btypes } from '../blockTypes';
+import { btypes } from '../types';
 
 test('btypes return value at different inputs', (): void => {
   expect(btypes(0x31464457)).toBe('WDF_BLOCKID_FILE');
