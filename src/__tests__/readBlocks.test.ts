@@ -3,7 +3,10 @@ import { join } from 'path';
 
 import { IOBuffer } from 'iobuffer';
 
-import { readBlockHeader, readBlockBody, readAllBlocks } from '../readBlocks';
+import {
+  readBlockHeader,
+  /*readBlockBody,*/ readAllBlocks,
+} from '../readBlocks';
 import { readFileHeader } from '../readFileHeader';
 
 describe('block parsing 6x6.wdf', () => {
@@ -23,10 +26,7 @@ describe('block parsing 6x6.wdf', () => {
     /* consistency-check */
     expect(blockHeader.blockSize).toBe(nPoints * nSpectra * 4 + 16);
   });
-  it('block', () => {
-    //const blockBody = readBlockBody(wdfBuffer, blockHeader);
-    // expect(blockBody).toBe(146176);
-  });
+  /* remains to test block body */
   it('allBlocks', () => {
     wdfBuffer.reset(); //512
     const allBlocks = readAllBlocks(wdfBuffer);
