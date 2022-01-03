@@ -8,7 +8,7 @@ import { readBytes64 } from './utilities';
 export interface AppVersion {
   [key: string]: number;
 }
-export class ParsedHeader {
+export interface ParsedHeader {
   signature: string;
   version: number;
   size: number;
@@ -68,99 +68,69 @@ function uuid(buffer: IOBuffer): string {
  * @return File Metadata
  */
 export function analyzeFileHeader(buffer: IOBuffer): ParsedHeader {
-  const signature:string = btypes(buffer.readUint32()); /* block id */
-  const version:number =
+  let parsedHeader: ParsedHeader = <any>{};
+  parsedHeader.signature = btypes(buffer.readUint32()); /* block id */
+  parsedHeader.version =
     buffer.readUint32(); /* The version of this (wdf) specification used by this file. */
-  const size:number = Number(
+  parsedHeader.size = Number(
     buffer.readBigUint64(),
   ); /* The size of this block (512bytes)*/
-  const flags:number = Number(
+  parsedHeader.flags = Number(
     buffer.readBigUint64(),
   ); /* flags from the Wdf flags enumeration */
-  const uuid:string =
+  parsedHeader.uuid =
     uuid(buffer); /* a file unique identifier - never changed once allocated */
-  const unused0:number = Number(buffer.readBigUint64());
-  const unused1:number = buffer.readUint32();
-  const ntracks:number =
+  parsedHeader.unused0 = Number(buffer.readBigUint64());
+  parsedHeader.unused1 = buffer.readUint32();
+  parsedHeader.ntracks =
     buffer.readUint32(); /* if WdfXYXY flag is set - contains the number of tracks used */
-  const status:number = buffer.readUint32(); /* file status word (error code) */
-  const npoints:number =
+  parsedHeader.status = buffer.readUint32(); /* file status word (error code) */
+  parsedHeader.npoints =
     buffer.readUint32(); /* number of points per spectrum */
-  const nspectra:number = Number(
-    buffer.readBigUint64()
+  parsedHeader.nspectra = Number(
+    buffer.readBigUint64(),
   ); /* number of actual spectra (capacity) */
-  const ncollected:number = Number(
-    buffer.readBigUint64()
+  parsedHeader.ncollected = Number(
+    buffer.readBigUint64(),
   ); /* number of spectra written into the file (count) */
-  const naccum:number =
+  parsedHeader.naccum =
     buffer.readUint32(); /* number of accumulations per spectrum */
-  const ylistcount:number =
+  parsedHeader.ylistcount =
     buffer.readUint32(); /* number of elements in the y-list (>1 for image) */
-  const xlistcount:number =
+  parsedHeader.xlistcount =
     buffer.readUint32(); /* number of elements for the x-list */
-  const origincount:number =
+  parsedHeader.origincount =
     buffer.readUint32(); /* number of data origin lists */
-  const appname:string = buffer
+  parsedHeader.appname = buffer
     .readUtf8(24)
     .replace(/\x00/g, ''); /* application name (utf-8 encoded) */
-  const appversion:AppVersion =
+  parsedHeader.appversion =
     appVersion(buffer); /* application version (major,minor,patch,build) */
-  const scantype:number =
+  parsedHeader.scantype =
     buffer.readUint32(); /* scan type - WdfScanType enum  */
-  const type:number =
+  parsedHeader.type =
     buffer.readUint32(); /* measurement type - WdfType enum  */
-  const timeStart:number = Number(
-    buffer.readBigUint64()
+  parsedHeader.timeStart = Number(
+    buffer.readBigUint64(),
   ); /* collection start time as FILETIME */
-  const timeEnd:number = Number(
+  parsedHeader.timeEnd = Number(
     buffer.readBigUint64(),
   ); /* collection end time as FILETIME */
-  const units:number =
+  parsedHeader.units =
     buffer.readUint32(); /* spectral data units (one of WdfDataUnits) */
-  const laserwavenum:number = buffer.readFloat32(); /* laser wavenumber */
-  const spare:number[] = readBytes64(buffer, 6);
-  const user:string = buffer
+  parsedHeader.laserwavenum = buffer.readFloat32(); /* laser wavenumber */
+  parsedHeader.spare = readBytes64(buffer, 6);
+  parsedHeader.user = buffer
     .readUtf8(32)
     .replace(/\x00/g, ''); /* utf-8 encoded user name */
-  const title:string = buffer
+  parsedHeader.title = buffer
     .readUtf8(160)
     .replace(/\x00/g, ''); /* utf-8 encoded user name */
-  const padding:number[] = readBytes64(buffer, 6); /*padded to 512 bytes*/
-  const free:number[] = readBytes64(buffer, 4); /*available for third party use */
-  const reserved:number = readBytes64(
+  parsedHeader.padding = readBytes64(buffer, 6); /*padded to 512 bytes*/
+  parsedHeader.free = readBytes64(buffer, 4); /*available for third party use */
+  parsedHeader.reserved = readBytes64(
     buffer,
     4,
   ); /*reserved for internal use by WiRE */
-  const parseHeader:ParseHeader={
-  signature,
-  version,
-  size,
-  flags,
-  uuid,
-  unused0,
-  unused1,
-  ntracks,
-  status,
-  npoints,
-  nspectra,
-  ncollected,
-  naccum,
-  ylistcount,
-  xlistcount,
-  origincount,
-  appname,
-  appversion,
-  scantype,
-  type,
-  timeStart,
-  timeEnd,
-  units,
-  laserwavenum,
-  spare,
-  user,
-  title,
-  padding,
-  free,
-  reserved }
   return parsedHeader;
 }
