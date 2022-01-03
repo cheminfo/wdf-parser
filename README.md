@@ -14,10 +14,14 @@ Parse raman WDF file.
 ## Usage
 
 ```js
-import { myModule } from 'wdf-parser';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+import { parse } from 'wdf-parser';
 
-const result = myModule(args);
-// result is ...
+const arrayBuffer = readFileSync(join(__dirname, 'spectra.spc'));
+
+const result = parse(arrayBuffer);
+// result is a JSON object containing everything that was parsed
 ```
 
 ### WDF file format
@@ -26,10 +30,10 @@ WDF is a new file format used in the WiRE Software Suite for storing Raman spect
 
 The data is stored in binary format. <!--with some parts encoded in ASCII. As such, the file must be viewed in either a hex editor or any compatible spectroscopy software.-->
 
-A WDF file starts with a File Header followed by Blocks of different type.
+A WDF file is a set of blocks of different type. It starts with a special File Header Block followed by Blocks of different type.
  
-* File Header: 512 bytes. **C** structure: "WdfHeader". The first 16 bytes match the Block Header.
-* Block: divided into block header and body. **C** structure: WdfBlock.
+* File Header: 512 bytes. The first 16 bytes match the Block Header.
+* Block: divided into block header and body.
   * Block Header: 16 bytes structure.
   * Block Body: variable length, depending on Block type
 

@@ -1,8 +1,8 @@
 import { IOBuffer } from 'iobuffer';
 
-import { analyzeFileHeader, ParsedHeader } from './analyzeFileHeader';
+import { readAllBlocks, Block } from './readBlocks';
+import { readFileHeader, FileHeader } from './readFileHeader';
 /*
-import { analyzeBlocks, ParsedBlocks } from './analyzeBlocks';
 import { analyzeLogs, ParsedLogs } from './analyzeLogs';
 */
 
@@ -13,8 +13,8 @@ import { analyzeLogs, ParsedLogs } from './analyzeLogs';
  */
 
 interface Wdf {
-  fileHeader: ParsedHeader;
-  dataBlocks: undefined;
+  fileHeader: FileHeader;
+  blocks: Block[];
   logs: undefined;
 }
 /**
@@ -25,8 +25,8 @@ interface Wdf {
  */
 export function parse(data: Buffer | ArrayBuffer): Wdf {
   const iobuffer = new IOBuffer(data);
-  const fileHeader = analyzeFileHeader(iobuffer);
-  const dataBlocks = undefined; // yet to write parser
+  const fileHeader = readFileHeader(iobuffer);
+  const blocks = readAllBlocks(iobuffer);
   const logs = undefined; //yet to write parser
-  return { fileHeader, dataBlocks, logs };
+  return { fileHeader, blocks, logs };
 }
