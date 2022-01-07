@@ -12,7 +12,7 @@ import { readFileHeader } from '../readFileHeader';
 describe('block parsing 6x6.wdf', () => {
   const wdf = readFileSync(join(__dirname, 'data/6x6.wdf'));
   const wdfBuffer = new IOBuffer(wdf);
-  const { nPoints, nSpectra } = readFileHeader(wdfBuffer);
+  const { nPoints, nSpectra, type: measurementType } = readFileHeader(wdfBuffer);
   wdfBuffer.mark(); //512
   const blockHeader = readBlockHeader(wdfBuffer);
   it('header block', () => {
@@ -29,7 +29,7 @@ describe('block parsing 6x6.wdf', () => {
   /* remains to test block body */
   it('allBlocks', () => {
     wdfBuffer.reset(); //512
-    const allBlocks = readAllBlocks(wdfBuffer);
+    const allBlocks = readAllBlocks(wdfBuffer,measurementType);
     expect(allBlocks).toHaveLength(13);
     expect(wdfBuffer.offset).toBe(wdfBuffer.length);
   });

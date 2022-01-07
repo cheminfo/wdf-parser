@@ -47,24 +47,21 @@ export interface FileHeader {
 }
 
 /**
- * File Header parsing - First 512 bytes
+ * File Header parsing - First 512 bytes. The file header is the first block of the file
+ * but it is different from the rest of the block headers. It has many more properties that 
+ * describe the file, and it is 512B long, as opposed to 16B.
  * @param buffer WDF buffer
  * @return File Metadata
  */
 export function readFileHeader(buffer: IOBuffer): FileHeader {
-  const signature: string = btypes(
-    buffer.readUint32(),
-  ); /* Block Id to check wether this is WDF format.*/
+
+  const signature: string = btypes(buffer.readUint32()); /* used to check whether this is WDF format. */
   const version =
-    buffer.readUint32(); /* The version of WDF specification used by this file. */
-  const fileHeaderSize = Number(
-    buffer.readBigUint64(),
-  ); /* The size of this file header block (512bytes)*/
+    buffer.readUint32(); /* Version of WDF specification used by this file. */
+  const fileHeaderSize = Number(buffer.readBigUint64()); /* Size of file header block (512B) */
   const flags = getFlagParameters(Number(buffer.readBigUint64()));
   /* flags from the Wdf flags enumeration */
-  const uuid: string = getUUId(
-    buffer.readBytes(16),
-  ); /* a file unique identifier - never changed once allocated */
+  const uuid: string = getUUId(buffer.readBytes(16)); /* file unique identifier */
   const unused0 = Number(buffer.readBigUint64());
   const unused1 = buffer.readUint32();
   const nTracks =

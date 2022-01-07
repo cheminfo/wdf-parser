@@ -1,5 +1,5 @@
 /**
- * Gives meaning to type codes
+ * Maps numeric type for block-header or file-header to a semantic label (a name)
  * @param blockId type code
  * @return Semantic label for block
  */

@@ -26,7 +26,7 @@ interface Wdf {
 export function parse(data: Buffer | ArrayBuffer): Wdf {
   const iobuffer = new IOBuffer(data);
   const fileHeader = readFileHeader(iobuffer);
-  const blocks = readAllBlocks(iobuffer);
+  const blocks = readAllBlocks(iobuffer, fileHeader.type);
   const logs = undefined; //yet to write parser
   return { fileHeader, blocks, logs };
 }

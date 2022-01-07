@@ -105,15 +105,12 @@ export function getXListUnit(num: number): string {
   }
 }
 
-//index signature
 /**
  * Gets the parameter in each bit of the flag
  * @param flag First byte of the main header
  * @returns The parameters
  */
-export interface FlagParameters {
-  [key: string]: boolean;
-}
+export interface FlagParameters { [key: string]: boolean }
 export function getFlagParameters(flag: number): FlagParameters {
   const xyxy = (flag & 1) !== 0; //
   const checkSum = (flag & 2) !== 0; //
@@ -211,4 +208,41 @@ export function getXListType(XList: number): string {
     default:
       throw new Error(`Unexpected XList value: ${XList}`);
   }
+}
+
+/** 
+* Checks whether the wdf file is corrupted.
+* @param blockTypes all the blocks found in file (excluding file header)
+* @return void for sane file | throws an error with a list of missing blocks 
+*/
+export function isCorrupted(blockTypes:string[], measurementType:string):void{
+/* 
+   standard blocks which must be available in any wdf file 
+   they **do not** necessarily appear in a specific order or position
+   in wdf file
+*/
+const standardBlocks:string[] = [
+      'WDF_BLOCKID_DATA',
+      'WDF_BLOCKID_YLIST',
+      'WDF_BLOCKID_XLIST',
+      'WDF_BLOCKID_ORIGIN'
+]; 
+
+// here we store any missing block
+let notFound:string[] = [];
+
+// these must exist
+standardBlocks.forEach( (stb) => {
+	if(!blockTypes.includes(stb)) notFound.push(stb)
+})
+
+// these must exist only for particular measurement type
+const seriesIsNot = measurementType==='series' && !blockTypes.includes('series')
+const mapIsNot = measurementType==='series' && !blockTypes.includes('series')
+if(seriesIsNot) notFound.push('WDF_BLOCKID_MAPAREA');
+if(mapIsNot) notFound.push('WDF_BLOCKID_MAPAREA');
+
+if (notFound.length !== 0){
+	throw new Error(`File is corrupt. Missing blocks: ${notFound}`)
+}
 }
