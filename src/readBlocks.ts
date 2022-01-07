@@ -2,7 +2,7 @@
 import { IOBuffer } from 'iobuffer';
 
 import { btypes } from './types';
-import { getUUId, getXListType, getXListUnit } from './utilities';
+import { getUUId, getXListType, getXListUnit, MeasurementType, isCorrupted } from './utilities';
 
 export interface BlockHeader {
   blockType: string;
@@ -23,9 +23,13 @@ export interface Block {
 /**
  * Block Header Parsing - Block's first 16 bytes
  * @param buffer WDF buffer
- * @return blockHeader Block metadata
+ * @param offset byte number where to start reading or uses current offset
+ * @return blockHeader Block metadata (block type, block size including header, uuid.)
  */
-export function readBlockHeader(buffer: IOBuffer): BlockHeader {
+export function readBlockHeader(buffer: IOBuffer, offset?:number): BlockHeader {
+  
+  if(offset) buffer.offset=offset;
+
   /* read properties */
   const blockType: string = btypes(buffer.readUint32());
   const uuid: string = getUUId(buffer.readBytes(4)); //block have uuid=0 when they are unique in their type.
@@ -37,17 +41,23 @@ export function readBlockHeader(buffer: IOBuffer): BlockHeader {
 /**
  * Parses Block body according to the specific block type
  * @param buffer WDF buffer
- * @param blockHeader size of the whole block (body+header)
+ * @param blockHeader 
+ * @param offset Where the block's body starts, or uses current buffer offset
  * @return array of datapoints and current buffer offset
  */
 export function readBlockBody(
   /* data in the order in which was collected in */
   buffer: IOBuffer,
   blockHeader: BlockHeader,
+  offset?:number
 ): BlockBody {
+
+  if(offset) buffer.offset=offset;
+
   const { blockSize, blockType } = blockHeader;
   const headerSize = 16;
   const bodySize = blockSize - headerSize;
+  //get 'typeless arraybuffer' read depending on the array type
   const wholeBlock: ArrayBuffer = buffer.readBytes(bodySize).buffer;
 
   if (blockType === 'WDF_BLOCKID_DATA') {
@@ -76,12 +86,19 @@ export function readBlockBody(
  * @param buffer WDF buffer
  * @return array of objects storing {blockHeader, blockBody} for each block
  */
-export function readAllBlocks(buffer: IOBuffer): Block[] {
+export function readAllBlocks(buffer: IOBuffer, measurementType:MeasurementType): Block[] {
+
   let blocks: Block[] = [];
+  let blockHeaderTypes:string[] = [];
   while (buffer.length > buffer.offset) {
     const blockHeader = readBlockHeader(buffer);
     const blockBody = readBlockBody(buffer, blockHeader);
     blocks.push({ blockHeader, blockBody });
+    blockHeaderTypes.push(blockHeader.blockType)
   }
+
+  // check if the block headers are complete
+  isCorrupted(blockHeaderTypes, measurementType);
+
   return blocks;
 }
