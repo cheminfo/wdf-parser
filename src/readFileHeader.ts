@@ -56,29 +56,26 @@ export interface FileHeader {
 export function readFileHeader(buffer: IOBuffer): FileHeader {
 
   const signature: string = btypes(buffer.readUint32()); /* used to check whether this is WDF format. */
-  const version =
-    buffer.readUint32(); /* Version of WDF specification used by this file. */
+  const version:number = (function (version:number):number{ 
+	  if(version !== 1) {
+		  throw new Error(`Script parses version 1. Found v.${version}`)
+	  }
+          return version
+  })(buffer.readUint32()) /* Version of WDF specification used by this file. */
   const fileHeaderSize = Number(buffer.readBigUint64()); /* Size of file header block (512B) */
   const flags = getFlagParameters(Number(buffer.readBigUint64()));
   /* flags from the Wdf flags enumeration */
   const uuid: string = getUUId(buffer.readBytes(16)); /* file unique identifier */
   const unused0 = Number(buffer.readBigUint64());
   const unused1 = buffer.readUint32();
-  const nTracks =
-    buffer.readUint32(); /* if WdfXYXY flag is set - contains the number of tracks used */
+  const nTracks = buffer.readUint32(); /* if WdfXYXY flag is set - contains the number of tracks used */
   const status = buffer.readUint32(); /* file status word (error code) */
   const nPoints = buffer.readUint32(); /* number of points per spectrum */
-  const nSpectra = Number(
-    buffer.readBigUint64(),
-  ); /* number of actual spectra (capacity) */
-  const nCollected = Number(
-    buffer.readBigUint64(),
-  ); /* number of spectra written into the file (count) */
+  const nSpectra = Number(buffer.readBigUint64()); /* number of actual spectra (capacity) */
+  const nCollected = Number(buffer.readBigUint64()); /* number of spectra written into the file (count) */
   const nAccum = buffer.readUint32(); /* number of accumulations per spectrum */
-  const yListCount =
-    buffer.readUint32(); /* number of elements in the y-list (>1 for image) */
-  const xListCount =
-    buffer.readUint32(); /* number of elements for the x-list */
+  const yListCount = buffer.readUint32(); /* number of elements in the y-list (>1 for image) */
+  const xListCount = buffer.readUint32(); /* number of elements for the x-list */
   const originCount = buffer.readUint32(); /* number of data origin lists */
   const appName: string = buffer
     .readUtf8(24)
