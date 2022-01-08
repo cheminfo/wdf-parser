@@ -1,8 +1,13 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import { btypes } from './types';
-import { getUUId, getXListType, getXListUnit, MeasurementType, isCorrupted } from './utilities';
+import {
+  btypes,
+  getMeasurementUnits,
+  OverallSpectraDescription,
+  getXListType,
+} from './types';
+import { getUUId, isCorrupted } from './utilities';
 
 export interface BlockHeader {
   blockType: string;
@@ -26,9 +31,11 @@ export interface Block {
  * @param offset byte number where to start reading or uses current offset
  * @return blockHeader Block metadata (block type, block size including header, uuid.)
  */
-export function readBlockHeader(buffer: IOBuffer, offset?:number): BlockHeader {
-  
-  if(offset) buffer.offset=offset;
+export function readBlockHeader(
+  buffer: IOBuffer,
+  offset?: number,
+): BlockHeader {
+  if (offset) buffer.offset = offset;
 
   /* read properties */
   const blockType: string = btypes(buffer.readUint32());
@@ -41,7 +48,7 @@ export function readBlockHeader(buffer: IOBuffer, offset?:number): BlockHeader {
 /**
  * Parses Block body according to the specific block type
  * @param buffer WDF buffer
- * @param blockHeader 
+ * @param blockHeader
  * @param offset Where the block's body starts, or uses current buffer offset
  * @return array of datapoints and current buffer offset
  */
@@ -49,10 +56,9 @@ export function readBlockBody(
   /* data in the order in which was collected in */
   buffer: IOBuffer,
   blockHeader: BlockHeader,
-  offset?:number
+  offset?: number,
 ): BlockBody {
-
-  if(offset) buffer.offset=offset;
+  if (offset) buffer.offset = offset;
 
   const { blockSize, blockType } = blockHeader;
   const headerSize = 16;
@@ -74,7 +80,11 @@ export function readBlockBody(
     // For the XList block, the number of floats is equal to npoints.
     const restOfBlock = wholeBlock.slice(8);
     const data = new Float32Array(restOfBlock);
-    return { type: getXListType(type), units: getXListUnit(units), data };
+    return {
+      type: getXListType(type),
+      units: getMeasurementUnits(units),
+      data,
+    };
   } //else if('WDF_BLOCKID_YLIST'){}
   else {
     return [];
@@ -86,19 +96,21 @@ export function readBlockBody(
  * @param buffer WDF buffer
  * @return array of objects storing {blockHeader, blockBody} for each block
  */
-export function readAllBlocks(buffer: IOBuffer, measurementType:MeasurementType): Block[] {
-
+export function readAllBlocks(
+  buffer: IOBuffer,
+  overallSpectraDescription: OverallSpectraDescription,
+): Block[] {
   let blocks: Block[] = [];
-  let blockHeaderTypes:string[] = [];
+  let blockHeaderTypes: string[] = [];
   while (buffer.length > buffer.offset) {
     const blockHeader = readBlockHeader(buffer);
     const blockBody = readBlockBody(buffer, blockHeader);
     blocks.push({ blockHeader, blockBody });
-    blockHeaderTypes.push(blockHeader.blockType)
+    blockHeaderTypes.push(blockHeader.blockType);
   }
 
   // check if the block headers are complete
-  isCorrupted(blockHeaderTypes, measurementType);
+  isCorrupted(blockHeaderTypes, overallSpectraDescription);
 
   return blocks;
 }
