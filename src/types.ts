@@ -1,5 +1,10 @@
+/* not defining very simple return types (like string) for many of these,
+as they are unlikely to change, only used a few times
+ and it would clutter the imports
+*/
 /**
  * Maps numeric type for block-header or file-header to a semantic label (a name)
+ * @export
  * @param blockId type code
  * @return Semantic label for block
  */
@@ -89,5 +94,216 @@ export function btypes(blockId: number): string {
       return 'WDF_STREAM_IS_CSTM';
     default:
       throw new Error(`blockId ${blockId} is not defined`);
+  }
+}
+
+/**
+ * Get descriptive spectral data-unit used from code
+ * @export
+ * @param buffer WDF buffer
+ * @param num code
+ * @return spectral data-units used
+ */
+export function getMeasurementUnits(num: number): string {
+  switch (num) {
+    case 0:
+      return 'arbitrary units';
+    case 1:
+      return 'Raman shift (cm-1)';
+    case 2:
+      return 'wavenumber (nm)';
+    case 3:
+      return '10-9 metres (nm)';
+    case 4:
+      return 'electron volts (eV)';
+    case 5:
+      return '10-6 metres (um)';
+    case 6:
+      return 'counts';
+    case 7:
+      return 'electrons';
+    case 8:
+      return '10-3 metres (mm)';
+    case 9:
+      return 'metres (m)';
+    case 10:
+      return 'Temperature (K)';
+    case 11:
+      return 'Pascals (Pa)';
+    case 12:
+      return 'seconds (s)';
+    case 13:
+      return 'milliseconds (ms)';
+    case 14:
+      return 'Hours (hs)';
+    case 15:
+      return 'Days (ds)';
+    case 16:
+      return 'Pixels';
+    case 17:
+      return 'Intensity';
+    case 18:
+      return 'Relative Intensity';
+    case 19:
+      return 'Degrees';
+    case 20:
+      return 'Temperature (C)';
+    case 21:
+      return 'Temperature (F)';
+    case 22:
+      return 'Kelvin per minute';
+    case 23:
+      return 'Filetime as Windows FileTime';
+    case 24:
+      return 'Endmarker';
+    default:
+      return `Unexpected value for num:${num}`;
+  }
+}
+
+/**
+ *
+ *
+ * @export
+ * @param {number} XList
+ * @return {*}  {string}
+ */
+export function getXListType(XList: number): string {
+  switch (XList) {
+    case 0:
+      return 'arbitrary'; /**< arbitrary type */
+    case 1:
+      return 'spectral'; /*deprecated*/
+    case 2:
+      return 'Intensity'; /**< arbitrary type */
+    case 3:
+      return 'X position'; /**< arbitrary type */
+    case 4:
+      return 'Y axis position'; /**< arbitrary type */
+    case 5:
+      return 'Z axis (vertical) position'; /**< arbitrary type */
+    case 6:
+      return 'R axis (rotary) position';
+    case 7:
+      return 'Theta angle (rotary) position';
+    case 8:
+      return 'phi angle (rotary) position';
+    case 9:
+      return 'Temperature';
+    case 10:
+      return 'Pressure';
+    case 11:
+      return 'Time';
+    case 12:
+      return 'Derived';
+    case 13:
+      return 'Polarization';
+    case 14:
+      return 'Focus Track Z position';
+    case 15:
+      return 'Temperature Ramp rate';
+    case 16:
+      return 'Spectrum Data Checksum';
+    case 17:
+      return 'Bit Flags';
+    case 18:
+      return 'Elapsed Time Intervals';
+    case 19:
+      return 'Frequency';
+    case 20:
+      return 'Microplate Well Spatial X';
+    case 21:
+      return 'Microplate Well Spatial Y';
+    case 22:
+      return 'Location Index';
+    case 23:
+      return 'Well Reference';
+    case 24:
+      return 'End Marker';
+    default:
+      throw new Error(`Unexpected XList value: ${XList}`);
+  }
+}
+
+/**
+ * Descriptive tag for spectra in file (unspecified, single,series, map)
+ * @param type from the fileheader
+ * @returns semantic type
+ */
+export type OverallSpectraDescription =
+  | 'unspecified'
+  | 'single'
+  | 'series'
+  | 'map';
+export function getOverallSpectraDescription(
+  type: number,
+): OverallSpectraDescription {
+  switch (type) {
+    case 0:
+      return 'unspecified';
+    case 1:
+      return 'single'; /* file contains a single spectrum */
+    case 2:
+      return 'series'; /* file contains multiple spectra with one common data origin (time, depth, temperature etc) */
+    case 3:
+      return 'map'; /* file contains multiple spectra with more that one common data origin. Typically area maps use X and Y spatial origins. Volume maps use X, Y and Z. The WMAP block normally defines the physical region.obeys the maparea object. check scan type for streamline, linefocus, etc. */
+    default:
+      throw new Error(`Expected: 0,1,2 or 3. Got ${type}`);
+  }
+}
+
+/**
+ *
+ * Retrieves the name of the data collection method used (scan type)
+ * @export
+ * @param scanType the data collection method used
+ * @return semantic scan type
+ */
+
+export function getScanType(scanType: number): string {
+  switch (scanType) {
+    case 0x0000:
+      return 'WdfScanType_Unspecified';
+    /*< for data that does not represent a spectrum collected from a Renishaw system */
+    case 0x0001:
+      /*< for single readout off the detector. Can be spectrum or image */
+      return 'WdfScanType_Static';
+    case 0x0002:
+      /*< for readouts using continuous extended scanning. Can be spectrum or image (unlikely; impossible for x axis readout) */
+      return 'WdfScanType_Continuous';
+    case 0x0003:
+      /*< for multiple statics taken at slightly overlapping ranges, then 'stitched' together to a single extended spectrum. Can be spectrum or image (unlikely) */
+      return 'WdfScanType_StepRepeat';
+    case 0x0004:
+      /*< filter image and filter scan both supported purely for historical reasons */
+      return 'WdfScanType_FilterScan';
+    case 0x0005:
+      return 'WdfScanType_FilterImage';
+    case 0x0006:
+      /*< must be a WdfType_Map measurement */
+      return 'WdfScanType_StreamLine';
+    case 0x0007:
+      /*< must be a WdfType_Map measurement */
+      return 'WdfScanType_StreamLineHR';
+    case 0x0008:
+      /*< for scans performed with a point detector */
+      return 'WdfScanType_Point';
+
+    /* The values below for multitrack and linefocus are flags that can be ORed with the above integer values
+     *  - multitrack discrete on fixed grating systems will only be static
+     *  - multitrack discrete could, on a fibre-probe system, be continuous, stitched, or static
+     *  - linefocusmapping similarly couild be continuous, stitched, or static, but at time of writing is static
+     */
+    case 0x0100:
+      /*< result is not a multitrack file */
+      return 'WdfScanType_MultitrackStitched';
+    case 0x0200:
+      /*< result is multitrack file (wdf header has multitrack flag set).*/
+      return 'WdfScanType_MultitrackDiscrete';
+    case 0x0400:
+      /*< Could be Static, Continuous (not yet implemented, impossible for x axis readout), or StepAndRepeat (not yet implemented) */
+      return 'WdfScanType_LineFocusMapping';
+    default:
+      throw new Error(`${scanType} is not in the set of possible values`);
   }
 }

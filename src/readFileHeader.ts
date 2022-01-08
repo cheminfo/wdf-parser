@@ -1,16 +1,20 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import { btypes } from './types';
+import {
+  btypes,
+  getMeasurementUnits,
+  getOverallSpectraDescription,
+  OverallSpectraDescription,
+  getScanType,
+} from './types';
 import {
   readBytes64,
   getUUId,
-  getMeasurementType,
   getAppVersion,
   getFlagParameters,
   AppVersion,
   FlagParameters,
-  MeasurementType,
 } from './utilities';
 
 export interface FileHeader {
@@ -32,11 +36,11 @@ export interface FileHeader {
   originCount: number;
   appName: string;
   appVersion: AppVersion;
-  scanType: number;
-  type: MeasurementType;
+  scanType: string;
+  type: OverallSpectraDescription;
   timeStart: number;
   timeEnd: number;
-  units: number;
+  units: string;
   laserWavenum: number;
   spare: number[];
   user: string;
@@ -55,15 +59,17 @@ export interface FileHeader {
  */
 export function readFileHeader(buffer: IOBuffer): FileHeader {
   /* next we determine all the properties included in the file header */
-  const signature: string = btypes(
-    buffer.readUint32(),
-  ); /* used to check whether this is WDF format. */
-  const version: number = (function getVersion(version: number): number {
-    if (version !== 1) {
-      throw new Error(`Script parses version 1. Found v.${version}`);
-    }
-    return version;
-  })(buffer.readUint32()); /* Version of WDF specification used by this file. */
+  const signature: string = btypes(buffer.readUint32());
+  /* used to check whether this is WDF format, if not it errors out */
+  if (signature !== 'WDF_BLOCKID_FILE') {
+    throw new Error(`expected WDF_BLOCKID_FILE, got ${signature}`);
+  }
+  const version: number =
+    buffer.readUint32(); /* Version of WDF specification used by this file. */
+  if (version !== 1) {
+    /* we may include try block for 2>version>1.0 */
+    throw new Error(`Script parses version 1. Found v.${version}`);
+  }
   const fileHeaderSize = Number(
     buffer.readBigUint64(),
   ); /* Size of file header block (512B) */
@@ -79,7 +85,8 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const nTracks =
     buffer.readUint32(); /* if WdfXYXY flag is set - contains the number of tracks used */
   const status = buffer.readUint32(); /* file status word (error code) */
-  const nPoints = buffer.readUint32(); /* number of points per spectrum */
+  const nPoints =
+    buffer.readUint32(); /* number of points -data values- per spectrum */
   const nSpectra = Number(
     buffer.readBigUint64(),
   ); /* number of actual spectra (capacity) */
@@ -98,8 +105,10 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const appVersion: AppVersion = getAppVersion(
     buffer.readBytes(8),
   ); /* application version (major,minor,patch,build) */
-  const scanType = buffer.readUint32(); /* scan type - WdfScanType enum  */
-  const type: MeasurementType = getMeasurementType(
+  const scanType: string = getScanType(
+    buffer.readUint32(),
+  ); /* scan type - WdfScanType enum  */
+  const type: OverallSpectraDescription = getOverallSpectraDescription(
     buffer.readUint32(),
   ); /* measurement type - WdfType enum  */
   const timeStart = Number(
@@ -108,8 +117,9 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const timeEnd = Number(
     buffer.readBigUint64(),
   ); /* collection end time as FILETIME */
-  const units =
-    buffer.readUint32(); /* spectral data units (one of WdfDataUnits) */
+  const units: string = getMeasurementUnits(
+    buffer.readUint32(),
+  ); /* spectral data units (one of WdfDataUnits) */
   const laserWavenum = buffer.readFloat32(); /* laser wavenumber */
   const spare: number[] = readBytes64(buffer, 6);
   const user: string = buffer
