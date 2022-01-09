@@ -34,7 +34,7 @@ export interface FileHeader {
   nTracks: number;
   /** file status word (error code) */
   status: number;
-  /** number of points -data values- per spectrum */
+  /** number of points -data values- per spectra */
   nPoints: number;
   /** number of actual spectra (capacity) */
   nSpectra: number;
