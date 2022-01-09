@@ -1,5 +1,7 @@
 import { IOBuffer } from 'iobuffer';
 
+import { OverallSpectraDescription } from './types';
+
 export type ReadBytes64 = (buffer: IOBuffer, nGroups: number) => number[];
 
 /**
@@ -84,7 +86,7 @@ export function getFlagParameters(flag: number): FlagParameters {
  */
 export function isCorrupted(
   blockTypes: string[],
-  measurementType: string,
+  overallSpectraDescription: OverallSpectraDescription,
 ): void {
   /*
    standard blocks which must be available in any wdf file
@@ -101,16 +103,20 @@ export function isCorrupted(
   // here we store any missing block
   let notFound: string[] = [];
 
-  // these must exist
+  /*
+  almost no difference bw indexOf & includes
+  https://262.ecma-international.org/6.0/#sec-string.prototype.includes
+  */
+  // these blocks must exist
   standardBlocks.forEach((stb) => {
     if (!blockTypes.includes(stb)) notFound.push(stb);
   });
 
   // these must exist only for particular measurement type
   const seriesIsNot =
-    measurementType === 'series' && !blockTypes.includes('series');
+    overallSpectraDescription === 'series' && !blockTypes.includes('series');
   const mapIsNot =
-    measurementType === 'series' && !blockTypes.includes('series');
+    overallSpectraDescription === 'series' && !blockTypes.includes('series');
   if (seriesIsNot) notFound.push('WDF_BLOCKID_MAPAREA');
   if (mapIsNot) notFound.push('WDF_BLOCKID_MAPAREA');
 
