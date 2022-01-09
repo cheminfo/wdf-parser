@@ -49,7 +49,7 @@ export function readBlockHeader(
 }
 
 interface DataBlock {
-  spectra: Uint32Array[];
+  spectras: Float32Array[];
 }
 interface XListBlock {
   type: string;
@@ -60,9 +60,9 @@ interface XListBlock {
 /**
  * Parses Block body according to the specific block type
  * @param buffer WDF buffer
- * @param fileHeader full file header or {nSpectra,nPoints}
- * @param blockHeader full block header or {blockSize,blockType}
- * @param offset Where the block's body starts, or uses current buffer offset
+ * @param fileHeader full file header | {nSpectra,nPoints}
+ * @param blockHeader full block header | {blockSize,blockType}
+ * @param offset Where the block's body starts | uses current buffer offset
  * @return array of datapoints and current buffer offset
  */
 export function readBlockBody(
@@ -84,14 +84,12 @@ export function readBlockBody(
   /* using case a:{} scopes the variables */
   switch (blockType) {
     case 'WDF_BLOCKID_DATA': {
-      let spectras32: Uint32Array[] = [];
+      let spectras32: Float32Array[] = [];
       for (let i = 0; i < nSpectra; i++) {
         const spectra8: Uint8Array = buffer.readBytes(4 * nPoints);
-        spectras32.push(new Uint32Array(spectra8.buffer));
+        spectras32.push(new Float32Array(spectra8.buffer));
       }
-      console.log(spectras32.length, spectras32);
-      const data: DataBlock = { spectra: spectras32 };
-      return data;
+      return { spectras: spectras32 } as DataBlock;
     }
 
     case 'WDF_BLOCKID_XLIST': {
@@ -100,12 +98,11 @@ export function readBlockBody(
 
       // For the XList block, the number of floats is equal to npoints.
       const restOfBlock = buffer.readBytes(bodySize - 8);
-      const data: XListBlock = {
+      return {
         type: getXListType(type),
         units: getMeasurementUnits(units),
         xList: new Float32Array(restOfBlock),
-      };
-      return data;
+      } as XListBlock;
     }
     //case 'WDF_BLOCKID_YLIST':
 
@@ -118,6 +115,7 @@ export function readBlockBody(
 /**
  * Parses all the Blocks in the file
  * @param buffer WDF buffer
+ * @param fileHeader fileHeader object | {nSpectra, nPoints}
  * @return array of objects storing {blockHeader, blockBody} for each block
  */
 export function readAllBlocks(
