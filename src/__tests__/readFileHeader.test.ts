@@ -19,6 +19,7 @@ describe('parse file header', () => {
       title: 'Simple mapping measurement 1',
       appName: 'WiRE',
       spare: [0, 0, 0, 0, 0, 0],
+      nSpectra: 36 //* number of actual spectra (capacity) */
       nCollected: 36 /*number of spectra collected */,
       yListCount: 1 /* > 1 means image */,
       units: 'counts' /* for variable measured in this experiment */,
@@ -26,6 +27,7 @@ describe('parse file header', () => {
       nTracks: 0,
       scanType: 'WdfScanType_Static',
     });
+    console.log(result.nSpectra);
     expect(Object.keys(result)).toHaveLength(30);
   });
 });
