@@ -157,12 +157,12 @@ export function getMeasurementUnits(num: number): string {
     case 24:
       return 'Endmarker';
     default:
-      return `Unexpected value for num:${num}`;
+      throw new Error(`Unexpected value for num:${num}`)
   }
 }
 
 /**
- *
+ * 
  *
  * @export
  * @param {number} XList
