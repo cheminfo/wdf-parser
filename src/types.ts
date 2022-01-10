@@ -1,7 +1,3 @@
-/* not defining very simple return types (like string) for many of these,
-as they are unlikely to change, only used a few times
- and it would clutter the imports
-*/
 /**
  * Maps numeric type for block-header or file-header to a semantic label (a name)
  * @export
@@ -11,13 +7,14 @@ as they are unlikely to change, only used a few times
 export function btypes(blockId: number): string {
   switch (blockId) {
     case 0x31464457:
-      return 'WDF_BLOCKID_FILE';
+      return 'WDF_BLOCKID_FILE'; /** holds important file metadata */
     case 0x41544144:
-      return 'WDF_BLOCKID_DATA';
+      return 'WDF_BLOCKID_DATA'; /** all spectras, in 32b floating numbers */
     case 0x54534c59:
-      return 'WDF_BLOCKID_YLIST';
+      return 'WDF_BLOCKID_YLIST'; /** holds values in case 2D images were taken. 
+    For spectra is a single value and is usually ignored */
     case 0x54534c58:
-      return 'WDF_BLOCKID_XLIST';
+      return 'WDF_BLOCKID_XLIST'; /** nPoints unit values for x axis */
     case 0x4e47524f:
       return 'WDF_BLOCKID_ORIGIN';
     case 0x54584554:
@@ -98,9 +95,8 @@ export function btypes(blockId: number): string {
 }
 
 /**
- * Get descriptive spectral data-unit used from code
+ * Get descriptive spectral data-unit from code
  * @export
- * @param buffer WDF buffer
  * @param num code
  * @return spectral data-units used
  */
@@ -162,14 +158,13 @@ export function getMeasurementUnits(num: number): string {
 }
 
 /**
- * 
- *
+ * Get descriptive spectral data-unit from code
  * @export
- * @param {number} XList
- * @return {*}  {string}
+ * @param code
+ * @return unit to use in axis
  */
-export function getXListType(XList: number): string {
-  switch (XList) {
+export function getListType(unit: number): string {
+  switch (unit) {
     case 0:
       return 'arbitrary'; /**< arbitrary type */
     case 1:

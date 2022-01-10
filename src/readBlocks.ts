@@ -2,7 +2,7 @@
 import { IOBuffer } from 'iobuffer';
 
 import { FileHeader } from './readFileHeader';
-import { btypes, getMeasurementUnits, getXListType } from './types';
+import { btypes, getMeasurementUnits, getListType } from './types';
 import { getUUId, isCorrupted } from './utilities';
 
 export interface BlockHeader {
@@ -16,12 +16,12 @@ export interface BlockHeader {
   uuid: string;
 }
 
-export type BlockBody = DataBlock | XListBlock | []; //temporary type.
+export type BlockBody = DataBlock | ListBlock | []; //temporary type.
 export interface Block {
   blockHeader: BlockHeader;
   blockBody: BlockBody;
 }
-export interface XList {
+export interface ListBlock {
   type: string;
   units: string;
   data: Float32Array;
@@ -51,7 +51,7 @@ export function readBlockHeader(
 interface DataBlock {
   spectras: Float32Array[];
 }
-interface XListBlock {
+interface ListBlock {
   type: string;
   units: string;
   xList: Float32Array;
@@ -79,7 +79,7 @@ export function readBlockBody(
 
   /*take some measurements*/
   const headerSize = 16;
-  const bodySize = blockSize - headerSize;
+  const bodySize = blockSize - headerSize; 
 
   /* using case a:{} scopes the variables */
   switch (blockType) {
@@ -93,18 +93,30 @@ export function readBlockBody(
     }
 
     case 'WDF_BLOCKID_XLIST': {
-      const first8Bytes = buffer.readBytes(8);
+      const first8Bytes:Uint8Array = buffer.readBytes(8);
       const [type, units] = new Uint32Array(first8Bytes.buffer);
 
       // For the XList block, the number of floats is equal to npoints.
-      const restOfBlock = buffer.readBytes(bodySize - 8);
+      const xAxisValues:Uint8Array = buffer.readBytes(4 * nPoints);
       return {
-        type: getXListType(type),
+        type: getListType(type),
         units: getMeasurementUnits(units),
-        xList: new Float32Array(restOfBlock),
-      } as XListBlock;
+        xList: new Float32Array(xAxisValues.buffer),
+      } as ListBlock;
     }
-    //case 'WDF_BLOCKID_YLIST':
+    case 'WDF_BLOCKID_YLIST':{
+      const first8Bytes:Uint8Array = buffer.readBytes(8);
+      const [type, units] = new Uint32Array(first8Bytes.buffer);
+// the number of points is equal to (the block size - sizeof(WdfBlock) - sizeof(uint32_t) -sizeof(uint32_t)) / sizeof(float)
+      const yAxisValues:Uint8Array = buffer.readBytes((bodySize-8));
+      return {
+        type: getListType(type),
+        units: getMeasurementUnits(units),
+	/* for spectra (no images) yList will be a single meaningless number*/
+        yList: new Float32Array(yAxisValues.buffer),
+      } as ListBlock;
+
+    }
 
     default:
       buffer.readBytes(bodySize);
