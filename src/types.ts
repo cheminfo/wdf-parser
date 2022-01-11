@@ -153,7 +153,7 @@ export function getMeasurementUnits(num: number): string {
     case 24:
       return 'Endmarker';
     default:
-      throw new Error(`Unexpected value for num:${num}`)
+      throw new Error(`Unexpected value for unit: ${num}`)
   }
 }
 
@@ -216,7 +216,7 @@ export function getListType(unit: number): string {
     case 24:
       return 'End Marker';
     default:
-      throw new Error(`Unexpected XList value: ${XList}`);
+      throw new Error(`Unexpected List unit: ${unit}`);
   }
 }
 
@@ -302,3 +302,27 @@ export function getScanType(scanType: number): string {
       throw new Error(`${scanType} is not in the set of possible values`);
   }
 }
+
+
+export interface WdfSpectrumFlags {
+	/**< Saturation flag. Some part of the spectrum data was saturated */
+	saturated: boolean, 
+	/**< Error flag. An error occurred while collecting this spectrum */
+	error: boolean,
+	/**< Cosmic ray flag. A cosmic ray was detected and accepted in software */
+	cosmicRay: boolean,
+	errorCode:number
+}
+
+export function getWdfSpectrumFlags(flags:bigint):WdfSpectrumFlags{
+	const flagsString = flags.toString(2);
+	const lowerIsFlags = parseInt(flagsString.slice(0,32));
+	const upperIsError = parseInt(flagsString.slice(32,));
+	return {
+	saturated: (lowerIsFlags & 0 ) !== 0,
+	error: (lowerIsFlags & 0b10) !== 0,
+	cosmicRay: (lowerIsFlags & 0b100) !==0,
+	errorCode:upperIsError
+	} as WdfSpectrumFlags
+}
+

@@ -1,4 +1,4 @@
-import { btypes, getScanType, getOverallSpectraDescription, getXListType, getMeasurementUnits } from '../types';
+import { btypes, getScanType, getOverallSpectraDescription, getListType, getMeasurementUnits } from '../types';
 
 test('btypes return value at different inputs', (): void => {
   expect(btypes(0x31464457)).toBe('WDF_BLOCKID_FILE');
@@ -45,7 +45,7 @@ test('btypes return value at different inputs', (): void => {
   expect(() => btypes(0x25)).toThrow('blockId 37 is not defined');
 });
 
-test('Experiment Measurement Units', (): void => {
+test('Experiment\'s Measurement Units', (): void => {
 expect(getMeasurementUnits(0)).toBe("arbitrary units")
 expect(getMeasurementUnits(1)).toBe("Raman shift (cm-1)")
 expect(getMeasurementUnits(2)).toBe("wavenumber (nm)")
@@ -71,37 +71,37 @@ expect(getMeasurementUnits(21)).toBe("Temperature (F)")
 expect(getMeasurementUnits(22)).toBe("Kelvin per minute")
 expect(getMeasurementUnits(23)).toBe("Filetime as Windows FileTime")
 expect(getMeasurementUnits(24)).toBe("Endmarker")
-expect(()=>getMeasurementUnits(25)).toThrow("Unexpected value for num:25")
+expect(()=>getMeasurementUnits(25)).toThrow("Unexpected value for unit: 25")
 })
 
 
-test('Experiment XList Units', (): void => {
-expect(getXListType(0)).toBe("arbitrary")
-expect(getXListType(1)).toBe("spectral")
-expect(getXListType(2)).toBe("Intensity")
-expect(getXListType(3)).toBe("X position")
-expect(getXListType(4)).toBe("Y axis position")
-expect(getXListType(5)).toBe("Z axis (vertical) position")
-expect(getXListType(6)).toBe("R axis (rotary) position")
-expect(getXListType(7)).toBe("Theta angle (rotary) position")
-expect(getXListType(8)).toBe("phi angle (rotary) position")
-expect(getXListType(9)).toBe("Temperature")
-expect(getXListType(10)).toBe("Pressure")
-expect(getXListType(11)).toBe("Time")
-expect(getXListType(12)).toBe("Derived")
-expect(getXListType(13)).toBe("Polarization")
-expect(getXListType(14)).toBe("Focus Track Z position")
-expect(getXListType(15)).toBe("Temperature Ramp rate")
-expect(getXListType(16)).toBe("Spectrum Data Checksum")
-expect(getXListType(17)).toBe("Bit Flags")
-expect(getXListType(18)).toBe("Elapsed Time Intervals")
-expect(getXListType(19)).toBe("Frequency")
-expect(getXListType(20)).toBe("Microplate Well Spatial X")
-expect(getXListType(21)).toBe("Microplate Well Spatial Y")
-expect(getXListType(22)).toBe("Location Index")
-expect(getXListType(23)).toBe("Well Reference")
-expect(getXListType(24)).toBe("End Marker")
-expect(()=>getXListType(25)).toThrow("Unexpected XList value: 25")
+test('Experiment\'s List Units', (): void => {
+expect(getListType(0)).toBe("arbitrary")
+expect(getListType(1)).toBe("spectral")
+expect(getListType(2)).toBe("Intensity")
+expect(getListType(3)).toBe("X position")
+expect(getListType(4)).toBe("Y axis position")
+expect(getListType(5)).toBe("Z axis (vertical) position")
+expect(getListType(6)).toBe("R axis (rotary) position")
+expect(getListType(7)).toBe("Theta angle (rotary) position")
+expect(getListType(8)).toBe("phi angle (rotary) position")
+expect(getListType(9)).toBe("Temperature")
+expect(getListType(10)).toBe("Pressure")
+expect(getListType(11)).toBe("Time")
+expect(getListType(12)).toBe("Derived")
+expect(getListType(13)).toBe("Polarization")
+expect(getListType(14)).toBe("Focus Track Z position")
+expect(getListType(15)).toBe("Temperature Ramp rate")
+expect(getListType(16)).toBe("Spectrum Data Checksum")
+expect(getListType(17)).toBe("Bit Flags")
+expect(getListType(18)).toBe("Elapsed Time Intervals")
+expect(getListType(19)).toBe("Frequency")
+expect(getListType(20)).toBe("Microplate Well Spatial X")
+expect(getListType(21)).toBe("Microplate Well Spatial Y")
+expect(getListType(22)).toBe("Location Index")
+expect(getListType(23)).toBe("Well Reference")
+expect(getListType(24)).toBe("End Marker")
+expect(()=>getListType(25)).toThrow("Unexpected List unit: 25")
 })
 
 
