@@ -11,7 +11,7 @@ export function btypes(blockId: number): string {
     case 0x41544144:
       return 'WDF_BLOCKID_DATA'; /** all spectras, in 32b floating numbers */
     case 0x54534c59:
-      return 'WDF_BLOCKID_YLIST'; /** holds values in case 2D images were taken. 
+      return 'WDF_BLOCKID_YLIST'; /** holds values in case 2D images were taken.
     For spectra is a single value and is usually ignored */
     case 0x54534c58:
       return 'WDF_BLOCKID_XLIST'; /** nPoints unit values for x axis */
@@ -153,7 +153,7 @@ export function getMeasurementUnits(num: number): string {
     case 24:
       return 'Endmarker';
     default:
-      throw new Error(`Unexpected value for unit: ${num}`)
+      throw new Error(`Unexpected value for unit: ${num}`);
   }
 }
 
@@ -303,26 +303,24 @@ export function getScanType(scanType: number): string {
   }
 }
 
-
 export interface WdfSpectrumFlags {
-	/**< Saturation flag. Some part of the spectrum data was saturated */
-	saturated: boolean, 
-	/**< Error flag. An error occurred while collecting this spectrum */
-	error: boolean,
-	/**< Cosmic ray flag. A cosmic ray was detected and accepted in software */
-	cosmicRay: boolean,
-	errorCode:number
+  /**< Saturation flag. Some part of the spectrum data was saturated */
+  saturated: boolean;
+  /**< Error flag. An error occurred while collecting this spectrum */
+  error: boolean;
+  /**< Cosmic ray flag. A cosmic ray was detected and accepted in software */
+  cosmicRay: boolean;
+  errorCode: number;
 }
 
-export function getWdfSpectrumFlags(flags:bigint):WdfSpectrumFlags{
-	const flagsString = flags.toString(2);
-	const lowerIsFlags = parseInt(flagsString.slice(0,32));
-	const upperIsError = parseInt(flagsString.slice(32,));
-	return {
-	saturated: (lowerIsFlags & 0 ) !== 0,
-	error: (lowerIsFlags & 0b10) !== 0,
-	cosmicRay: (lowerIsFlags & 0b100) !==0,
-	errorCode:upperIsError
-	} as WdfSpectrumFlags
+export function getWdfSpectrumFlags(flags: bigint): WdfSpectrumFlags {
+  const flagsString = flags.toString(2);
+  const lowerIsFlags = parseInt(flagsString.slice(0, 32));
+  const upperIsError = parseInt(flagsString.slice(32));
+  return {
+    saturated: (lowerIsFlags & 0) !== 0,
+    error: (lowerIsFlags & 0b10) !== 0,
+    cosmicRay: (lowerIsFlags & 0b100) !== 0,
+    errorCode: upperIsError,
+  } as WdfSpectrumFlags;
 }
-

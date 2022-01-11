@@ -1,7 +1,11 @@
 import { IOBuffer } from 'iobuffer';
 
-import { OverallSpectraDescription } from './types';
-
+import {
+  getMeasurementUnits,
+  getListType,
+  OverallSpectraDescription,
+} from './types';
+import { SubheaderOrigin } from './readBlocks';
 export type ReadBytes64 = (buffer: IOBuffer, nGroups: number) => number[];
 
 /**
@@ -123,4 +127,26 @@ export function isCorrupted(
   if (notFound.length !== 0) {
     throw new Error(`File is corrupt. Missing blocks: ${notFound.join(' ,')}`);
   }
+}
+
+/**
+ * Convert a Windows FILETIME to a Javascript Date
+ * intervals since January 1, 1601 (UTC)
+ * @export
+ * @param fileTime - the number of 100ns
+ * @returns {Date}
+ * from https://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html
+ **/
+export function fileTimeToDate(fileTime: bigint): Date {
+  return new Date(Number(fileTime) / 10000 - 11644473600000);
+}
+
+export function subheaderOrigin(buffer: IOBuffer): SubheaderOrigin {
+  const typeAndFlag = buffer.readUint32();
+  /*not sure how to analyze flag yet */
+  const flag = typeAndFlag.toString(2)[0] as '1' | '0';
+  const type = getListType(parseInt(typeAndFlag.toString(2).slice(17), 2));
+  const unit = getMeasurementUnits(buffer.readUint32());
+  const label = buffer.readChars(16).replace(/\x00/g, '');
+  return { flag, type, unit, label };
 }
