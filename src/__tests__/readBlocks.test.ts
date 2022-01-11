@@ -3,7 +3,10 @@ import { join } from 'path';
 
 import { IOBuffer } from 'iobuffer';
 
-import { readBlockHeader, readBlockBody, readAllBlocks } from '../readBlocks';
+import {
+  readBlockHeader,
+  /*readBlockBody,*/ readAllBlocks,
+} from '../readBlocks';
 import { readFileHeader } from '../readFileHeader';
 
 describe('parsing 6x6.wdf', () => {

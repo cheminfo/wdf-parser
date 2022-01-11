@@ -315,8 +315,8 @@ export interface WdfSpectrumFlags {
 
 export function getWdfSpectrumFlags(flags: bigint): WdfSpectrumFlags {
   const flagsString = flags.toString(2);
-  const lowerIsFlags = parseInt(flagsString.slice(0, 32));
-  const upperIsError = parseInt(flagsString.slice(32));
+  const lowerIsFlags = parseInt(flagsString.slice(0, 32), 2);
+  const upperIsError = parseInt(flagsString.slice(32), 2);
   return {
     saturated: (lowerIsFlags & 0) !== 0,
     error: (lowerIsFlags & 0b10) !== 0,

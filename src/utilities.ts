@@ -1,11 +1,13 @@
+/* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
+import { SubheaderOrigin } from './readBlocks';
 import {
   getMeasurementUnits,
   getListType,
   OverallSpectraDescription,
 } from './types';
-import { SubheaderOrigin } from './readBlocks';
+
 export type ReadBytes64 = (buffer: IOBuffer, nGroups: number) => number[];
 
 /**
