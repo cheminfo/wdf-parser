@@ -147,7 +147,7 @@ export function subheaderOrigin(buffer: IOBuffer): SubheaderOrigin {
   const typeAndFlag = buffer.readUint32();
   /*not sure how to analyze flag yet */
   const flag = typeAndFlag.toString(2)[0] as '1' | '0';
-  const type = getListType(parseInt(typeAndFlag.toString(2).slice(17), 2));
+  const type = getListType(parseInt(typeAndFlag.toString(2).slice(1), 2));
   const unit = getMeasurementUnits(buffer.readUint32());
   const label = buffer.readChars(16).replace(/\x00/g, '');
   return { flag, type, unit, label };
