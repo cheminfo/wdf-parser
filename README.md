@@ -18,7 +18,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { parse } from 'wdf-parser';
 
-const arrayBuffer = readFileSync(join(__dirname, 'spectra.spc'));
+const arrayBuffer = readFileSync(join(__dirname, 'spectra.wdf'));
 
 const result = parse(arrayBuffer);
 // result is a JSON object containing everything that was parsed
