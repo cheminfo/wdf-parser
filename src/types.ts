@@ -313,14 +313,11 @@ export interface WdfSpectrumFlags {
   errorCode: number;
 }
 
-export function getWdfSpectrumFlags(flags: bigint): WdfSpectrumFlags {
-  const flagsString = flags.toString(2);
-  const lowerIsFlags = parseInt(flagsString.slice(0, 32), 2);
-  const upperIsError = parseInt(flagsString.slice(32), 2);
+export function getWdfSpectrumFlags(lower:number, higher:number): WdfSpectrumFlags {	
   return {
-    saturated: (lowerIsFlags & 0) !== 0,
-    error: (lowerIsFlags & 0b10) !== 0,
-    cosmicRay: (lowerIsFlags & 0b100) !== 0,
-    errorCode: upperIsError,
+    saturated: (lower & 1) !== 0,
+    error: (lower & 0b10) !== 0,
+    cosmicRay: (lower & 0b100) !== 0,
+    errorCode: higher >> 32
   } as WdfSpectrumFlags;
 }
