@@ -63,7 +63,7 @@ export interface SubheaderOrigin {
   /** type i.e: Spectral, Spatial, T, P, Checksum, Time */
   type: string;
   /** Important Origin 1, Alternative Origin 0 */
-  flag: '1' | '0';
+  flag: 1 | 0;
   /** The units of the origin list values. i.e cm-1, nm, etc */
   unit: string;
   /** Identified for the block i.e X, Y, Cheksum */
@@ -170,9 +170,11 @@ export function readBlockBody(
         } else if (label === 'Flags') {
           /* Spectra errors & metadata */
           let spectrumFlags: WdfSpectrumFlags[] = [];
-          new BigUint64Array(valuesForBlocks).forEach((spectraFlags) => {
-            spectrumFlags.push(getWdfSpectrumFlags(spectraFlags));
-          });
+          let spectrumFlagsRaw = new Uint32Array(valuesForBlocks);
+	  for(let i=0; i<spectrumFlagsRaw.length; i=i+2){
+	   const {[i]:lowerPart, [i+1]: higherPart} = spectrumFlagsRaw;
+            spectrumFlags.push(getWdfSpectrumFlags(lowerPart,higherPart));
+          };
           data[set].spectrumFlags = spectrumFlags;
         } else if (label === 'Time') {
           let spectrumDates: Date[] = [];
