@@ -313,11 +313,14 @@ export interface WdfSpectrumFlags {
   errorCode: number;
 }
 
-export function getWdfSpectrumFlags(lower:number, higher:number): WdfSpectrumFlags {	
+export function getWdfSpectrumFlags(
+  lower: number,
+  higher: number,
+): WdfSpectrumFlags {
   return {
     saturated: (lower & 1) !== 0,
     error: (lower & 0b10) !== 0,
     cosmicRay: (lower & 0b100) !== 0,
-    errorCode: higher >> 32
+    errorCode: higher >> 32,
   } as WdfSpectrumFlags;
 }

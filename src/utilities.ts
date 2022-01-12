@@ -146,8 +146,8 @@ export function fileTimeToDate(fileTime: bigint): Date {
 export function subheaderOrigin(buffer: IOBuffer): SubheaderOrigin {
   const typeAndFlag = buffer.readUint32();
   /*not sure how to analyze flag yet */
-  const flag = typeAndFlag >> 31 as 0|1;
-  const type = getListType(typeAndFlag & (2**15 -1));
+  const flag = (typeAndFlag >> 31) as 0 | 1;
+  const type = getListType(typeAndFlag & (2 ** 15 - 1));
   const unit = getMeasurementUnits(buffer.readUint32());
   const label = buffer.readChars(16).replace(/\x00/g, '');
   return { flag, type, unit, label };

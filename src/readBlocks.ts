@@ -171,10 +171,10 @@ export function readBlockBody(
           /* Spectra errors & metadata */
           let spectrumFlags: WdfSpectrumFlags[] = [];
           let spectrumFlagsRaw = new Uint32Array(valuesForBlocks);
-	  for(let i=0; i<spectrumFlagsRaw.length; i=i+2){
-	   const {[i]:lowerPart, [i+1]: higherPart} = spectrumFlagsRaw;
-            spectrumFlags.push(getWdfSpectrumFlags(lowerPart,higherPart));
-          };
+          for (let i = 0; i < spectrumFlagsRaw.length; i = i + 2) {
+            const { [i]: lowerPart, [i + 1]: higherPart } = spectrumFlagsRaw;
+            spectrumFlags.push(getWdfSpectrumFlags(lowerPart, higherPart));
+          }
           data[set].spectrumFlags = spectrumFlags;
         } else if (label === 'Time') {
           let spectrumDates: Date[] = [];
