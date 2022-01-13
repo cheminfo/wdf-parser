@@ -125,6 +125,9 @@ export function readBlockBody(
     /*values not necessarily equally spaced, they're ordered Low to High or H to L*/
     case 'WDF_BLOCKID_XLIST':
     case 'WDF_BLOCKID_YLIST': {
+      /*The XList block contains the (npoint) unit values for the x axis. The YList block stores
+       * values used in cases where a 2D image is taken (i.e. a CCD image or a filter image). For
+       * spectra this is a single value and is usually ignored */
       const first8Bytes: Uint8Array = buffer.readBytes(8);
       const [type, units] = new Uint32Array(first8Bytes.buffer);
 
@@ -144,19 +147,19 @@ export function readBlockBody(
 
       /* iterate over each of the "subblocks", or sets. */
       for (let set = 0; set < nDataOriginSets; set++) {
-        /* each set has a header */
+        /* each set has a header with same structure */
         const headerOfSet:HeaderOfSet = getHeaderOfSet(buffer);
         data.push(headerOfSet);
         /* origin holds a 64bit piece of important data per set, and the sets are = nSpectra */
-        const bodyOfSet: ArrayBuffer = buffer.readBytes(
-          nSpectra * 8,
-        ).buffer;
-        const label = headerOfSet.label;
+        const bodyOfSet: ArrayBuffer = buffer.readBytes(nSpectra*8).buffer;
 
+        const label = headerOfSet.label;
+        switch(label){
         /* X|Y set */
-        if (['X', 'Y'].includes(label)) {
-          data[set].axisOrigins = new Float64Array(bodyOfSet);
-        } else if (label === 'Flags') {
+        case 'X':
+        case 'Y':{ data[set].axisOrigins = new Float64Array(bodyOfSet) }
+        /* Flags Set*/
+        case 'Flags': {
           /* Spectra errors & metadata */
           let spectrumFlags: WdfSpectrumFlags[] = [];
           let spectrumFlagsRaw = new Uint32Array(bodyOfSet);
@@ -165,18 +168,22 @@ export function readBlockBody(
             spectrumFlags.push(getWdfSpectrumFlags(lowerPart, higherPart));
           }
           data[set].spectrumFlags = spectrumFlags;
-        } else if (label === 'Time') {
+        } 
+        case 'Time': {
           let spectrumDates: Date[] = [];
           new BigUint64Array(bodyOfSet).forEach((spectraDate) => {
             spectrumDates.push(fileTimeToDate(spectraDate));
           });
           data[set].spectrumDates = spectrumDates;
-        } else {
-          data[set].otherValues = new BigUint64Array(bodyOfSet);
+        } 
+        default:{ data[set].otherValues = new BigUint64Array(bodyOfSet) }
         }
       }
+
       return data;
     }
+
+    /* default case for other not analyzed (but read) file blocks */
     default:
       buffer.readBytes(bodySize);
       return [];

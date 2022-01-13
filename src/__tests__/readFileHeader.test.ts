@@ -36,6 +36,13 @@ describe('parse file header', () => {
       nTracks: 0,
       /* for single readout off the detector. Can be spectrum or image */
       scanType: 'WdfScanType_Static',
+/* if it is a map type, MAP AREA BLOCK is essential */
+/* file contains multiple spectra with more that one common data origin. Typically area maps use X
+* and Y spatial origins. Volume maps use X, Y and Z. 
+The WMAP block normally defines the physical region.obeys the maparea object. check scan type for 
+streamline, linefocus, etc. */
+      type: 'map',
+      originCount:5 /* Time, Flags, X, Y, Checksum, Header */
     });
     // test number of keys in result object;
     expect(Object.keys(result)).toHaveLength(30);

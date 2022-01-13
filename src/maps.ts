@@ -65,7 +65,7 @@ export function getBlockTypes(blockId: number): BlockTypes {
     case 0x54534c58:
       return 'WDF_BLOCKID_XLIST'; /** nPoints unit values for x axis */
     case 0x4e47524f:
-      return 'WDF_BLOCKID_ORIGIN';
+      return 'WDF_BLOCKID_ORIGIN'; /** hold a header and then sets, which are like subblocks */
     case 0x54584554:
       return 'WDF_BLOCKID_COMMENT';
     case 0x41445857:
