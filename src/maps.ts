@@ -1,141 +1,149 @@
+import {IOBuffer} from 'iobuffer';
+/** all these functions take a simple numeric input and 
+map it to a word or human readable output
+@module maps
+*/
+/** wdf file is divided in blocks. Each blog has one of these types. */
 export type BlockTypes =
-  | 'Wdf_BLOCKID_FILE'
-  | 'Wdf_BLOCKID_DATA'
-  | 'Wdf_BLOCKID_YLIST'
-  | 'Wdf_BLOCKID_XLIST'
-  | 'Wdf_BLOCKID_ORIGIN'
-  | 'Wdf_BLOCKID_COMMENT'
-  | 'Wdf_BLOCKID_WIREDATA'
-  | 'Wdf_BLOCKID_DATASETDATA'
-  | 'Wdf_BLOCKID_MEASUREMENT'
-  | 'Wdf_BLOCKID_CALIBRATION'
-  | 'Wdf_BLOCKID_INSTRUMENT'
-  | 'Wdf_BLOCKID_MAPAREA'
-  | 'Wdf_BLOCKID_WHITELIGHT'
-  | 'Wdf_BLOCKID_THUMBNAIL'
-  | 'Wdf_BLOCKID_MAP'
-  | 'Wdf_BLOCKID_CURVEFIT'
-  | 'Wdf_BLOCKID_COMPONENT'
-  | 'Wdf_BLOCKID_PCA'
-  | 'Wdf_BLOCKID_EM'
-  | 'Wdf_BLOCKID_ZELDAC'
-  | 'Wdf_BLOCKID_RESPONSECAL'
-  | 'Wdf_BLOCKID_CAP'
-  | 'Wdf_BLOCKID_PROCESSING'
-  | 'Wdf_BLOCKID_ANALYSIS'
-  | 'Wdf_BLOCKID_SPECTRUMLABELS'
-  | 'Wdf_BLOCKID_CHECKSUM'
-  | 'Wdf_BLOCKID_RXCALDATA'
-  | 'Wdf_BLOCKID_RXCALFIT'
-  | 'Wdf_BLOCKID_XCAL'
-  | 'Wdf_BLOCKID_SPECSEARCH'
-  | 'Wdf_BLOCKID_TEMPPROFILE'
-  | 'Wdf_BLOCKID_UNITCONVERT'
-  | 'Wdf_BLOCKID_ARPLATE'
-  | 'Wdf_BLOCKID_ELECSIGN'
-  | 'Wdf_BLOCKID_BKXLIST'
-  | 'Wdf_BLOCKID_AUXILARYDATA'
-  | 'Wdf_BLOCKID_CHANGELOG'
-  | 'Wdf_BLOCKID_SURFACE'
-  | 'Wdf_BLOCKID_ANY'
-  | 'Wdf_STREAM_IS_PSET'
-  | 'Wdf_STREAM_IS_CSTM';
+  | 'WDF_BLOCKID_FILE'
+  | 'WDF_BLOCKID_DATA'
+  | 'WDF_BLOCKID_YLIST'
+  | 'WDF_BLOCKID_XLIST'
+  | 'WDF_BLOCKID_ORIGIN'
+  | 'WDF_BLOCKID_COMMENT'
+  | 'WDF_BLOCKID_WIREDATA'
+  | 'WDF_BLOCKID_DATASETDATA'
+  | 'WDF_BLOCKID_MEASUREMENT'
+  | 'WDF_BLOCKID_CALIBRATION'
+  | 'WDF_BLOCKID_INSTRUMENT'
+  | 'WDF_BLOCKID_MAPAREA'
+  | 'WDF_BLOCKID_WHITELIGHT'
+  | 'WDF_BLOCKID_THUMBNAIL'
+  | 'WDF_BLOCKID_MAP'
+  | 'WDF_BLOCKID_CURVEFIT'
+  | 'WDF_BLOCKID_COMPONENT'
+  | 'WDF_BLOCKID_PCA'
+  | 'WDF_BLOCKID_EM'
+  | 'WDF_BLOCKID_ZELDAC'
+  | 'WDF_BLOCKID_RESPONSECAL'
+  | 'WDF_BLOCKID_CAP'
+  | 'WDF_BLOCKID_PROCESSING'
+  | 'WDF_BLOCKID_ANALYSIS'
+  | 'WDF_BLOCKID_SPECTRUMLABELS'
+  | 'WDF_BLOCKID_CHECKSUM'
+  | 'WDF_BLOCKID_RXCALDATA'
+  | 'WDF_BLOCKID_RXCALFIT'
+  | 'WDF_BLOCKID_XCAL'
+  | 'WDF_BLOCKID_SPECSEARCH'
+  | 'WDF_BLOCKID_TEMPPROFILE'
+  | 'WDF_BLOCKID_UNITCONVERT'
+  | 'WDF_BLOCKID_ARPLATE'
+  | 'WDF_BLOCKID_ELECSIGN'
+  | 'WDF_BLOCKID_BKXLIST'
+  | 'WDF_BLOCKID_AUXILARYDATA'
+  | 'WDF_BLOCKID_CHANGELOG'
+  | 'WDF_BLOCKID_SURFACE'
+  | 'WDF_BLOCKID_ANY'
+  | 'WDF_STREAM_IS_PSET'
+  | 'WDF_STREAM_IS_CSTM';
+
 /**
  * Maps numeric type for block-header or file-header to a semantic label (a name)
  * @export
  * @param blockId type code
  * @return Semantic label for block
  */
-export function btypes(blockId: number): BlockTypes {
+export function getBlockTypes(blockId: number): BlockTypes {
   switch (blockId) {
     case 0x31464457:
-      return 'Wdf_BLOCKID_FILE'; /** holds important file metadata */
+      return 'WDF_BLOCKID_FILE'; /** holds important file metadata */
     case 0x41544144:
-      return 'Wdf_BLOCKID_DATA'; /** all spectras, in 32b floating numbers */
+      return 'WDF_BLOCKID_DATA'; /** all spectras, in 32b floating numbers */
     case 0x54534c59:
-      return 'Wdf_BLOCKID_YLIST'; /** holds values in case 2D images were taken.
+      return 'WDF_BLOCKID_YLIST'; /** holds values in case 2D images were taken.
     For spectra is a single value and is usually ignored */
     case 0x54534c58:
-      return 'Wdf_BLOCKID_XLIST'; /** nPoints unit values for x axis */
+      return 'WDF_BLOCKID_XLIST'; /** nPoints unit values for x axis */
     case 0x4e47524f:
-      return 'Wdf_BLOCKID_ORIGIN';
+      return 'WDF_BLOCKID_ORIGIN';
     case 0x54584554:
-      return 'Wdf_BLOCKID_COMMENT';
+      return 'WDF_BLOCKID_COMMENT';
     case 0x41445857:
-      return 'Wdf_BLOCKID_WIREDATA';
+      return 'WDF_BLOCKID_WIREDATA';
     case 0x42445857:
-      return 'Wdf_BLOCKID_DATASETDATA';
+      return 'WDF_BLOCKID_DATASETDATA';
     case 0x4d445857:
-      return 'Wdf_BLOCKID_MEASUREMENT';
+      return 'WDF_BLOCKID_MEASUREMENT';
     case 0x53435857:
-      return 'Wdf_BLOCKID_CALIBRATION';
+      return 'WDF_BLOCKID_CALIBRATION';
     case 0x53495857:
-      return 'Wdf_BLOCKID_INSTRUMENT';
+      return 'WDF_BLOCKID_INSTRUMENT';
     case 0x50414d57:
-      return 'Wdf_BLOCKID_MAPAREA';
+      return 'WDF_BLOCKID_MAPAREA';
     case 0x4c544857:
-      return 'Wdf_BLOCKID_WHITELIGHT';
+      return 'WDF_BLOCKID_WHITELIGHT';
     case 0x4c49414e:
-      return 'Wdf_BLOCKID_THUMBNAIL';
+      return 'WDF_BLOCKID_THUMBNAIL';
     case 0x2050414d:
-      return 'Wdf_BLOCKID_MAP';
+      return 'WDF_BLOCKID_MAP';
     case 0x52414643:
-      return 'Wdf_BLOCKID_CURVEFIT';
+      return 'WDF_BLOCKID_CURVEFIT';
     case 0x534c4344:
-      return 'Wdf_BLOCKID_COMPONENT';
+      return 'WDF_BLOCKID_COMPONENT';
     case 0x52414350:
-      return 'Wdf_BLOCKID_PCA';
+      return 'WDF_BLOCKID_PCA';
     case 0x4552434d:
-      return 'Wdf_BLOCKID_EM';
+      return 'WDF_BLOCKID_EM';
     case 0x43444c5a:
-      return 'Wdf_BLOCKID_ZELDAC';
+      return 'WDF_BLOCKID_ZELDAC';
     case 0x4c414352:
-      return 'Wdf_BLOCKID_RESPONSECAL';
+      return 'WDF_BLOCKID_RESPONSECAL';
     case 0x20504143:
-      return 'Wdf_BLOCKID_CAP';
+      return 'WDF_BLOCKID_CAP';
     case 0x50524157:
-      return 'Wdf_BLOCKID_PROCESSING';
+      return 'WDF_BLOCKID_PROCESSING';
     case 0x41524157:
-      return 'Wdf_BLOCKID_ANALYSIS';
+      return 'WDF_BLOCKID_ANALYSIS';
     case 0x4c424c57:
-      return 'Wdf_BLOCKID_SPECTRUMLABELS';
+      return 'WDF_BLOCKID_SPECTRUMLABELS';
     case 0x4b484357:
-      return 'Wdf_BLOCKID_CHECKSUM';
+      return 'WDF_BLOCKID_CHECKSUM';
     case 0x44435852:
-      return 'Wdf_BLOCKID_RXCALDATA';
+      return 'WDF_BLOCKID_RXCALDATA';
     case 0x46435852:
-      return 'Wdf_BLOCKID_RXCALFIT';
+      return 'WDF_BLOCKID_RXCALFIT';
     case 0x4c414358:
-      return 'Wdf_BLOCKID_XCAL';
+      return 'WDF_BLOCKID_XCAL';
     case 0x48435253:
-      return 'Wdf_BLOCKID_SPECSEARCH';
+      return 'WDF_BLOCKID_SPECSEARCH';
     case 0x504d4554:
-      return 'Wdf_BLOCKID_TEMPPROFILE';
+      return 'WDF_BLOCKID_TEMPPROFILE';
     case 0x56434e55:
-      return 'Wdf_BLOCKID_UNITCONVERT';
+      return 'WDF_BLOCKID_UNITCONVERT';
     case 0x52505241:
-      return 'Wdf_BLOCKID_ARPLATE';
+      return 'WDF_BLOCKID_ARPLATE';
     case 0x43454c45:
-      return 'Wdf_BLOCKID_ELECSIGN';
+      return 'WDF_BLOCKID_ELECSIGN';
     case 0x4c584b42:
-      return 'Wdf_BLOCKID_BKXLIST';
+      return 'WDF_BLOCKID_BKXLIST';
     case 0x20585541:
-      return 'Wdf_BLOCKID_AUXILARYDATA';
+      return 'WDF_BLOCKID_AUXILARYDATA';
     case 0x474c4843:
-      return 'Wdf_BLOCKID_CHANGELOG';
+      return 'WDF_BLOCKID_CHANGELOG';
     case 0x46525553:
-      return 'Wdf_BLOCKID_SURFACE';
+      return 'WDF_BLOCKID_SURFACE';
     case 0xffffffff:
-      return 'Wdf_BLOCKID_ANY';
+      return 'WDF_BLOCKID_ANY';
     case 0x54455350:
-      return 'Wdf_STREAM_IS_PSET';
+      return 'WDF_STREAM_IS_PSET';
     case 0x4d545343:
-      return 'Wdf_STREAM_IS_CSTM';
+      return 'WDF_STREAM_IS_CSTM';
     default:
       throw new Error(`blockId ${blockId} is not defined`);
   }
 }
 
+/* Unit that the measurement recorded by the instrument/system is supposed to be in */ 
 export type MeasurementUnits =
   | 'arbitrary units'
   | 'Raman shift (cm-1)'
@@ -164,13 +172,13 @@ export type MeasurementUnits =
   | 'Endmarker';
 
 /**
- * Get descriptive spectral data-unit from code
+ * Get descriptive measurement-unit from code
  * @export
- * @param num code
- * @return spectral data-units used
+ * @param code
+ * @return code mapped to human readable measurement data-unit
  */
-export function getMeasurementUnits(num: number): MeasurementUnits {
-  switch (num) {
+export function getMeasurementUnits(code: number): MeasurementUnits {
+  switch (code) {
     case 0:
       return 'arbitrary units';
     case 1:
@@ -222,10 +230,11 @@ export function getMeasurementUnits(num: number): MeasurementUnits {
     case 24:
       return 'Endmarker';
     default:
-      throw new Error(`Unexpected value for unit: ${num}`);
+      throw new Error(`Unexpected value for unit: ${code}`);
   }
 }
 
+/** Type of data the axis (X or Y) holds */
 export type ListTypes =
   | 'arbitrary'
   | 'spectral'
@@ -254,9 +263,9 @@ export type ListTypes =
   | 'End Marker';
 
 /**
- * Get descriptive spectral data-unit from code
+ * Get descriptive data-unit for an axis from code
  * @export
- * @param code
+ * @param unit 
  * @return unit to use in axis
  */
 export function getListType(unit: number): ListTypes {
@@ -264,7 +273,7 @@ export function getListType(unit: number): ListTypes {
     case 0:
       return 'arbitrary'; /**< arbitrary type */
     case 1:
-      return 'spectral'; /*deprecated*/
+      return 'spectral'; /*deprecated, use frequency*/
     case 2:
       return 'Intensity'; /**< arbitrary type */
     case 3:
@@ -318,11 +327,12 @@ export function getListType(unit: number): ListTypes {
 
 /**
  * Descriptive tag for spectra in file (unspecified, single,series, map)
+ * @export
  * @param type from the fileheader
  * @returns semantic type
  */
 export type OverallSpectraDescription =
-  | 'unspecified'
+  | 'unspecified'  
   | 'single'
   | 'series'
   | 'map';
@@ -331,9 +341,9 @@ export function getOverallSpectraDescription(
 ): OverallSpectraDescription {
   switch (type) {
     case 0:
-      return 'unspecified';
+      return 'unspecified'; 
     case 1:
-      return 'single'; /* file contains a single spectrum */
+      return 'single'; /** file contains a single spectrum */
     case 2:
       return 'series'; /* file contains multiple spectra with one common data origin (time, depth, temperature etc) */
     case 3:
@@ -358,6 +368,7 @@ export type ScanType =
   | 'WdfScanType_MultitrackStitched'
   | 'WdfScanType_MultitrackDiscrete'
   | 'WdfScanType_LineFocusMapping';
+
 /**
  *
  * Retrieves the name of the data collection method used (scan type)
@@ -365,7 +376,6 @@ export type ScanType =
  * @param scanType the data collection method used
  * @return semantic scan type
  */
-
 export function getScanType(scanType: number): ScanType {
   switch (scanType) {
     case 0x0000:
@@ -394,7 +404,6 @@ export function getScanType(scanType: number): ScanType {
     case 0x0008:
       /*< for scans performed with a point detector */
       return 'WdfScanType_Point';
-
     /* The values below for multitrack and linefocus are flags that can be ORed with the above integer values
      *  - multitrack discrete on fixed grating systems will only be static
      *  - multitrack discrete could, on a fibre-probe system, be continuous, stitched, or static
@@ -423,15 +432,127 @@ export interface WdfSpectrumFlags {
   cosmicRay: boolean;
   errorCode: number;
 }
-
-export function getWdfSpectrumFlags(
-  lower: number,
-  higher: number,
-): WdfSpectrumFlags {
+/** Analyzes the information in lower and high part of the 64B number.
+Spectrum flags are details to be aware of when reading the spectra */
+export function getWdfSpectrumFlags(lower: number, higher: number): WdfSpectrumFlags {
   return {
     saturated: (lower & 1) !== 0,
     error: (lower & 0b10) !== 0,
     cosmicRay: (lower & 0b100) !== 0,
     errorCode: higher >> 32,
   } as WdfSpectrumFlags;
+}
+
+
+export interface AppVersion {
+  major:number,
+  minor:number,
+  patch:number,
+  build:number
+}
+
+/**
+ * Build the semantic versioning
+ * @param buffer WDF buffer
+ * @return Object containing WDF semantic versioning
+ */
+export function getAppVersion(version: Uint8Array): AppVersion {
+  const [major, minor, patch, build] = new Uint16Array(version.buffer);
+  return { major, minor, patch, build };
+}
+
+/**
+ * Calculate the universal identifier (as a string) for files and blocks
+ * @param buffer WDF buffer
+ * @param Id values for Id in Uint8Array
+ * @return uuid as a string
+ */
+export function getUUId(Id: Uint8Array): string {
+  let version = new Uint32Array(Id.buffer);
+  return version.join('.');
+}
+
+export interface FlagParameters {
+  /** multiple X list and data block exist*/
+  xyxy: boolean;
+  /** checksum is enabled*/
+  checkSum: boolean;
+  /** hardware cosmic ray removal was enabled*/
+  cosmicRayRemoval: boolean;
+  /** separated X list for each spectrum */
+  multitrack: boolean;
+  /** saturated datasets exist*/
+  saturation: boolean;
+  /** a complete backup file has been created*/
+  fileBackup: boolean;
+  /** this is a temporary file set for Display Title else filename*/
+  temporary: boolean;
+  /** Indicates that file has been extracted from WdfVol file slice like X / Y / Z.*/
+  slice: boolean;
+}
+
+/**
+ * Gets the parameter in each bit of the flag. 
+ * These parameters specify a particular file property
+ * @param flag First byte of the main header
+ * @returns The parameters
+ */
+export function getFlagParameters(flag: number): FlagParameters {
+  const xyxy = (flag & 1) !== 0;
+  const checkSum = (flag & 2) !== 0;
+  const cosmicRayRemoval = (flag & 4) !== 0;
+  const multitrack = (flag & 8) !== 0;
+  const saturation = (flag & 16) !== 0;
+  const fileBackup = (flag & 32) !== 0;
+  const temporary = (flag & 64) !== 0;
+  const slice = (flag & 128) !== 0;
+  return {
+    xyxy,
+    checkSum,
+    cosmicRayRemoval,
+    multitrack,
+    saturation,
+    fileBackup,
+    temporary,
+    slice,
+  } as FlagParameters;
+}
+
+/**
+ * Convert a Windows FILETIME to a Javascript Date
+ * intervals since January 1, 1601 (UTC)
+ * @export
+ * @param fileTime - the number of 100ns
+ * @returns {Date}
+ * from https://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html
+ **/
+export function fileTimeToDate(fileTime: bigint): Date {
+  return new Date(Number(fileTime) / 10000 - 11644473600000);
+}
+
+export interface HeaderOfSet {
+  /** type i.e: Spectral, Spatial, T, P, Checksum, Time */
+  type: string;
+  /** Important Origin 1, Alternative Origin 0 */
+  flag: 1 | 0;
+  /** The units of the origin list values. i.e cm-1, nm, etc */
+  unit: string;
+  /** Identified for the block i.e X, Y, Cheksum */
+  label: string;
+  /** next properties depend on the label */
+  /** Array, axis origin for every (all) spectrum. X,Y 'd be != origin blocks */
+}
+
+/**
+ * Reads the header for each set in an origin block
+ * @param buffer
+ * @returns header of the set
+ */
+export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
+  const typeAndFlag = buffer.readUint32();
+  const flag = (typeAndFlag >> 31) as 0 | 1;
+  const type = getListType(typeAndFlag & (2 ** 15 - 1));
+  const unit = getMeasurementUnits(buffer.readUint32());
+  const label = buffer.readChars(16).replace(/\x00/g, '');
+  return { flag, type, unit, label };
 }

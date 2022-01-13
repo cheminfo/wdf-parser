@@ -3,20 +3,19 @@ import { IOBuffer } from 'iobuffer';
 
 import { FileHeader } from './readFileHeader';
 import {
-  btypes,
+  getBlockTypes,
   getMeasurementUnits,
   getListType,
   getWdfSpectrumFlags,
   WdfSpectrumFlags,
-} from './types';
-import {
   getUUId,
-  isCorrupted,
   fileTimeToDate,
-  headerOriginSet,
-} from './utilities';
+  getHeaderOfSet,
+  HeaderOfSet
+} from './maps';
+import { isCorrupted, } from './utilities';
 
-/* the main object is the Block, we define the type and subtypes */
+/** represents the main data unit 'Block', we define the type and subtypes */
 export interface Block {
   /** Object with block metadata */
   blockHeader: BlockHeader;
@@ -24,7 +23,7 @@ export interface Block {
   blockBody: BlockBody;
 }
 
-/* The Header is the same for every block */
+/** The Header is the same for every block */
 export interface BlockHeader {
   /** block identity */
   blockType: string;
@@ -34,7 +33,7 @@ export interface BlockHeader {
   uuid: string;
 }
 
-/* body is different for different blocks */
+/** body is different for different blocks */
 export type BlockBody = DataBlock | ListBlock | OriginBlock[] | []; //temporary type.
 
 /* Types for the block body (depends on the blockHeader 'Type') */
@@ -45,7 +44,7 @@ export interface DataBlock {
 }
 
 /** Stores X or Y Axis Values (the same for each spectrum in a file,
-we valuesForBlocks to real, meaningful values using ORIGIN).
+mapped to real values using origin values in ORIGIN block).
 data is ordered high to low or L to H,
 and the spacing between points need not be constant.
 */
@@ -59,19 +58,7 @@ export interface ListBlock {
 }
 
 /** Stores critical info about spectras/images.  Must-be blocks: Time (spectra acquisition), Flags raised during each aquisition, Checksum values for each dataset if CFR was in use.  */
-export interface HeaderOriginSet {
-  /** type i.e: Spectral, Spatial, T, P, Checksum, Time */
-  type: string;
-  /** Important Origin 1, Alternative Origin 0 */
-  flag: 1 | 0;
-  /** The units of the origin list values. i.e cm-1, nm, etc */
-  unit: string;
-  /** Identified for the block i.e X, Y, Cheksum */
-  label: string;
-  /** next properties depend on the label */
-  /** Array, axis origin for every (all) spectrum. X,Y 'd be != origin blocks */
-}
-export interface OriginBlock extends HeaderOriginSet {
+export interface OriginBlock extends HeaderOfSet {
   axisOrigins?: Float64Array | BigUint64Array;
   /** Array of objects, Flags for a each spectrum, if a spectrum.
 Ex: error, errorCode, saturated, cosmicRay */
@@ -93,7 +80,7 @@ export function readBlockHeader(
   /*an offset can be assigned manually if desired*/
   if (offset) buffer.offset = offset;
 
-  const blockType: string = btypes(buffer.readUint32());
+  const blockType: string = getBlockTypes(buffer.readUint32());
   const uuid: string = getUUId(buffer.readBytes(4));
   const blockSize = Number(buffer.readBigUint64()); // Bytes
 
@@ -154,23 +141,25 @@ export function readBlockBody(
     case 'WDF_BLOCKID_ORIGIN': {
       let data: OriginBlock[] = [];
       const nDataOriginSets = buffer.readUint32();
-      for (let set = 0; set < nDataOriginSets; set++) {
-        const subheader = headerOriginSet(buffer);
-        data.push(subheader);
 
+      /* iterate over each of the "subblocks", or sets. */
+      for (let set = 0; set < nDataOriginSets; set++) {
+        /* each set has a header */
+        const headerOfSet:HeaderOfSet = getHeaderOfSet(buffer);
+        data.push(headerOfSet);
         /* origin holds a 64bit piece of important data per set, and the sets are = nSpectra */
-        const valuesForBlocks: ArrayBuffer = buffer.readBytes(
+        const bodyOfSet: ArrayBuffer = buffer.readBytes(
           nSpectra * 8,
         ).buffer;
-        const label = subheader.label;
+        const label = headerOfSet.label;
 
         /* X|Y set */
         if (['X', 'Y'].includes(label)) {
-          data[set].axisOrigins = new Float64Array(valuesForBlocks);
+          data[set].axisOrigins = new Float64Array(bodyOfSet);
         } else if (label === 'Flags') {
           /* Spectra errors & metadata */
           let spectrumFlags: WdfSpectrumFlags[] = [];
-          let spectrumFlagsRaw = new Uint32Array(valuesForBlocks);
+          let spectrumFlagsRaw = new Uint32Array(bodyOfSet);
           for (let i = 0; i < spectrumFlagsRaw.length; i = i + 2) {
             const { [i]: lowerPart, [i + 1]: higherPart } = spectrumFlagsRaw;
             spectrumFlags.push(getWdfSpectrumFlags(lowerPart, higherPart));
@@ -178,12 +167,12 @@ export function readBlockBody(
           data[set].spectrumFlags = spectrumFlags;
         } else if (label === 'Time') {
           let spectrumDates: Date[] = [];
-          new BigUint64Array(valuesForBlocks).forEach((spectraDate) => {
+          new BigUint64Array(bodyOfSet).forEach((spectraDate) => {
             spectrumDates.push(fileTimeToDate(spectraDate));
           });
           data[set].spectrumDates = spectrumDates;
         } else {
-          data[set].otherValues = new BigUint64Array(valuesForBlocks);
+          data[set].otherValues = new BigUint64Array(bodyOfSet);
         }
       }
       return data;
@@ -217,4 +206,4 @@ export function readAllBlocks(
   isCorrupted(blockHeaderTypes, fileHeader.type);
 
   return blocks;
-}
+ }

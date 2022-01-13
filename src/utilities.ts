@@ -1,12 +1,11 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import { HeaderOriginSet } from './readBlocks';
 import {
   getMeasurementUnits,
   getListType,
   OverallSpectraDescription,
-} from './types';
+} from './maps';
 
 export type ReadBytes64 = (buffer: IOBuffer, nGroups: number) => number[];
 
@@ -26,73 +25,6 @@ export const readBytes64: ReadBytes64 = (buffer, nGroups) => {
   }
   return groupsOf64;
 };
-
-export interface AppVersion {
-  [key: string]: number;
-}
-/**
- * Build the semantic versioning
- * @param buffer WDF buffer
- * @return Object containing WDF semantic versioning
- */
-export function getAppVersion(version: Uint8Array): AppVersion {
-  const [major, minor, patch, build] = new Uint16Array(version.buffer);
-  return { major, minor, patch, build };
-}
-/**
- * Universal identifier (as a string) for files and blocks
- * @param buffer WDF buffer
- * @param Id values for Id in Uint8Array
- * @return uuid as a string
- */
-export function getUUId(Id: Uint8Array): string {
-  let version = new Uint32Array(Id.buffer);
-  return version.join('.');
-}
-
-/**
- * Gets the parameter in each bit of the flag
- * @param flag First byte of the main header
- * @returns The parameters
- */
-export interface FlagParameters {
-  /** multiple X list and data block exist*/
-  xyxy: boolean;
-  /** checksum is enabled*/
-  checkSum: boolean;
-  /** hardware cosmic ray removal was enabled*/
-  cosmicRayRemoval: boolean;
-  /** separated X list for each spectrum */
-  multitrack: boolean;
-  /** saturated datasets exist*/
-  saturation: boolean;
-  /** a complete backup file has been created*/
-  fileBackup: boolean;
-  /** this is a temporary file set for Display Title else filename*/
-  temporary: boolean;
-  /** Indicates that file has been extracted from WdfVol file slice like X / Y / Z.*/
-  slice: boolean;
-}
-export function getFlagParameters(flag: number): FlagParameters {
-  const xyxy = (flag & 1) !== 0;
-  const checkSum = (flag & 2) !== 0;
-  const cosmicRayRemoval = (flag & 4) !== 0;
-  const multitrack = (flag & 8) !== 0;
-  const saturation = (flag & 16) !== 0;
-  const fileBackup = (flag & 32) !== 0;
-  const temporary = (flag & 64) !== 0;
-  const slice = (flag & 128) !== 0;
-  return {
-    xyxy,
-    checkSum,
-    cosmicRayRemoval,
-    multitrack,
-    saturation,
-    fileBackup,
-    temporary,
-    slice,
-  } as FlagParameters;
-}
 
 /**
  * Checks whether the wdf file is corrupted.
@@ -138,31 +70,4 @@ export function isCorrupted(
   if (notFound.length !== 0) {
     throw new Error(`File is corrupt. Missing blocks: ${notFound.join(' ,')}`);
   }
-}
-
-/**
- * Convert a Windows FILETIME to a Javascript Date
- * intervals since January 1, 1601 (UTC)
- * @export
- * @param fileTime - the number of 100ns
- * @returns {Date}
- * from https://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html
- **/
-export function fileTimeToDate(fileTime: bigint): Date {
-  return new Date(Number(fileTime) / 10000 - 11644473600000);
-}
-
-/**
- * Reads the header for each set in an origin block
- * @param buffer
- * @returns
- */
-export function headerOriginSet(buffer: IOBuffer): HeaderOriginSet {
-  const typeAndFlag = buffer.readUint32();
-  /*not sure how to analyze flag yet */
-  const flag = (typeAndFlag >> 31) as 0 | 1;
-  const type = getListType(typeAndFlag & (2 ** 15 - 1));
-  const unit = getMeasurementUnits(buffer.readUint32());
-  const label = buffer.readChars(16).replace(/\x00/g, '');
-  return { flag, type, unit, label };
 }

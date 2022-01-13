@@ -1,28 +1,26 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import {
-  btypes,
+import { 
+  getBlockTypes,
+  BlockTypes,
   getMeasurementUnits,
   MeasurementUnits,
   getOverallSpectraDescription,
   OverallSpectraDescription,
   getScanType,
   ScanType,
-  BlockTypes,
-} from './types';
-import {
-  readBytes64,
   getUUId,
   getAppVersion,
   getFlagParameters,
-  AppVersion,
   FlagParameters,
-} from './utilities';
+  AppVersion,
+} from './maps';
+import { readBytes64 } from './utilities';
 
 export interface FileHeader {
   /** used to check whether this is WDF format, if not it errors out */
-  signature: 'Wdf_BLOCKID_FILE';
+  signature: 'WDF_BLOCKID_FILE';
   /** Version of WDF specification used by this file. */
   version: number;
   /** Size of file header block (512B) */
@@ -47,7 +45,7 @@ export interface FileHeader {
   nAccum: number;
   /** number of elements in the y-list (>1 for image) */
   yListCount: number;
-  /** number of elements (points) for the x-list */
+  /** number of elements (points) for the x-axis (xlist) */
   xListCount: number;
   /** number of data origin lists */
   originCount: number;
@@ -89,8 +87,8 @@ export interface FileHeader {
  */
 export function readFileHeader(buffer: IOBuffer): FileHeader {
   /* next we determine all the properties included in the file header */
-  const signature: BlockTypes = btypes(buffer.readUint32());
-  if (signature !== 'Wdf_BLOCKID_FILE') {
+  const signature: BlockTypes = getBlockTypes(buffer.readUint32());
+  if (signature !== 'WDF_BLOCKID_FILE') {
     throw new Error(`expected WDF_BLOCKID_FILE, got ${signature}`);
   }
   const version: number = buffer.readUint32();
