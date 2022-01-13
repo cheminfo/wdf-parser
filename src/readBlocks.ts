@@ -13,7 +13,7 @@ import {
   getUUId,
   isCorrupted,
   fileTimeToDate,
-  subheaderOrigin,
+  headerOriginSet,
 } from './utilities';
 
 /* the main object is the Block, we define the type and subtypes */
@@ -59,7 +59,7 @@ export interface ListBlock {
 }
 
 /** Stores critical info about spectras/images.  Must-be blocks: Time (spectra acquisition), Flags raised during each aquisition, Checksum values for each dataset if CFR was in use.  */
-export interface SubheaderOrigin {
+export interface HeaderOriginSet {
   /** type i.e: Spectral, Spatial, T, P, Checksum, Time */
   type: string;
   /** Important Origin 1, Alternative Origin 0 */
@@ -71,7 +71,7 @@ export interface SubheaderOrigin {
   /** next properties depend on the label */
   /** Array, axis origin for every (all) spectrum. X,Y 'd be != origin blocks */
 }
-export interface OriginBlock extends SubheaderOrigin {
+export interface OriginBlock extends HeaderOriginSet {
   axisOrigins?: Float64Array | BigUint64Array;
   /** Array of objects, Flags for a each spectrum, if a spectrum.
 Ex: error, errorCode, saturated, cosmicRay */
@@ -155,7 +155,7 @@ export function readBlockBody(
       let data: OriginBlock[] = [];
       const nDataOriginSets = buffer.readUint32();
       for (let set = 0; set < nDataOriginSets; set++) {
-        const subheader = subheaderOrigin(buffer);
+        const subheader = headerOriginSet(buffer);
         data.push(subheader);
 
         /* origin holds a 64bit piece of important data per set, and the sets are = nSpectra */

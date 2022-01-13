@@ -1,98 +1,167 @@
+export type BlockTypes =
+  | 'Wdf_BLOCKID_FILE'
+  | 'Wdf_BLOCKID_DATA'
+  | 'Wdf_BLOCKID_YLIST'
+  | 'Wdf_BLOCKID_XLIST'
+  | 'Wdf_BLOCKID_ORIGIN'
+  | 'Wdf_BLOCKID_COMMENT'
+  | 'Wdf_BLOCKID_WIREDATA'
+  | 'Wdf_BLOCKID_DATASETDATA'
+  | 'Wdf_BLOCKID_MEASUREMENT'
+  | 'Wdf_BLOCKID_CALIBRATION'
+  | 'Wdf_BLOCKID_INSTRUMENT'
+  | 'Wdf_BLOCKID_MAPAREA'
+  | 'Wdf_BLOCKID_WHITELIGHT'
+  | 'Wdf_BLOCKID_THUMBNAIL'
+  | 'Wdf_BLOCKID_MAP'
+  | 'Wdf_BLOCKID_CURVEFIT'
+  | 'Wdf_BLOCKID_COMPONENT'
+  | 'Wdf_BLOCKID_PCA'
+  | 'Wdf_BLOCKID_EM'
+  | 'Wdf_BLOCKID_ZELDAC'
+  | 'Wdf_BLOCKID_RESPONSECAL'
+  | 'Wdf_BLOCKID_CAP'
+  | 'Wdf_BLOCKID_PROCESSING'
+  | 'Wdf_BLOCKID_ANALYSIS'
+  | 'Wdf_BLOCKID_SPECTRUMLABELS'
+  | 'Wdf_BLOCKID_CHECKSUM'
+  | 'Wdf_BLOCKID_RXCALDATA'
+  | 'Wdf_BLOCKID_RXCALFIT'
+  | 'Wdf_BLOCKID_XCAL'
+  | 'Wdf_BLOCKID_SPECSEARCH'
+  | 'Wdf_BLOCKID_TEMPPROFILE'
+  | 'Wdf_BLOCKID_UNITCONVERT'
+  | 'Wdf_BLOCKID_ARPLATE'
+  | 'Wdf_BLOCKID_ELECSIGN'
+  | 'Wdf_BLOCKID_BKXLIST'
+  | 'Wdf_BLOCKID_AUXILARYDATA'
+  | 'Wdf_BLOCKID_CHANGELOG'
+  | 'Wdf_BLOCKID_SURFACE'
+  | 'Wdf_BLOCKID_ANY'
+  | 'Wdf_STREAM_IS_PSET'
+  | 'Wdf_STREAM_IS_CSTM';
 /**
  * Maps numeric type for block-header or file-header to a semantic label (a name)
  * @export
  * @param blockId type code
  * @return Semantic label for block
  */
-export function btypes(blockId: number): string {
+export function btypes(blockId: number): BlockTypes {
   switch (blockId) {
     case 0x31464457:
-      return 'WDF_BLOCKID_FILE'; /** holds important file metadata */
+      return 'Wdf_BLOCKID_FILE'; /** holds important file metadata */
     case 0x41544144:
-      return 'WDF_BLOCKID_DATA'; /** all spectras, in 32b floating numbers */
+      return 'Wdf_BLOCKID_DATA'; /** all spectras, in 32b floating numbers */
     case 0x54534c59:
-      return 'WDF_BLOCKID_YLIST'; /** holds values in case 2D images were taken.
+      return 'Wdf_BLOCKID_YLIST'; /** holds values in case 2D images were taken.
     For spectra is a single value and is usually ignored */
     case 0x54534c58:
-      return 'WDF_BLOCKID_XLIST'; /** nPoints unit values for x axis */
+      return 'Wdf_BLOCKID_XLIST'; /** nPoints unit values for x axis */
     case 0x4e47524f:
-      return 'WDF_BLOCKID_ORIGIN';
+      return 'Wdf_BLOCKID_ORIGIN';
     case 0x54584554:
-      return 'WDF_BLOCKID_COMMENT';
+      return 'Wdf_BLOCKID_COMMENT';
     case 0x41445857:
-      return 'WDF_BLOCKID_WIREDATA';
+      return 'Wdf_BLOCKID_WIREDATA';
     case 0x42445857:
-      return 'WDF_BLOCKID_DATASETDATA';
+      return 'Wdf_BLOCKID_DATASETDATA';
     case 0x4d445857:
-      return 'WDF_BLOCKID_MEASUREMENT';
+      return 'Wdf_BLOCKID_MEASUREMENT';
     case 0x53435857:
-      return 'WDF_BLOCKID_CALIBRATION';
+      return 'Wdf_BLOCKID_CALIBRATION';
     case 0x53495857:
-      return 'WDF_BLOCKID_INSTRUMENT';
+      return 'Wdf_BLOCKID_INSTRUMENT';
     case 0x50414d57:
-      return 'WDF_BLOCKID_MAPAREA';
+      return 'Wdf_BLOCKID_MAPAREA';
     case 0x4c544857:
-      return 'WDF_BLOCKID_WHITELIGHT';
+      return 'Wdf_BLOCKID_WHITELIGHT';
     case 0x4c49414e:
-      return 'WDF_BLOCKID_THUMBNAIL';
+      return 'Wdf_BLOCKID_THUMBNAIL';
     case 0x2050414d:
-      return 'WDF_BLOCKID_MAP';
+      return 'Wdf_BLOCKID_MAP';
     case 0x52414643:
-      return 'WDF_BLOCKID_CURVEFIT';
+      return 'Wdf_BLOCKID_CURVEFIT';
     case 0x534c4344:
-      return 'WDF_BLOCKID_COMPONENT';
+      return 'Wdf_BLOCKID_COMPONENT';
     case 0x52414350:
-      return 'WDF_BLOCKID_PCA';
+      return 'Wdf_BLOCKID_PCA';
     case 0x4552434d:
-      return 'WDF_BLOCKID_EM';
+      return 'Wdf_BLOCKID_EM';
     case 0x43444c5a:
-      return 'WDF_BLOCKID_ZELDAC';
+      return 'Wdf_BLOCKID_ZELDAC';
     case 0x4c414352:
-      return 'WDF_BLOCKID_RESPONSECAL';
+      return 'Wdf_BLOCKID_RESPONSECAL';
     case 0x20504143:
-      return 'WDF_BLOCKID_CAP';
+      return 'Wdf_BLOCKID_CAP';
     case 0x50524157:
-      return 'WDF_BLOCKID_PROCESSING';
+      return 'Wdf_BLOCKID_PROCESSING';
     case 0x41524157:
-      return 'WDF_BLOCKID_ANALYSIS';
+      return 'Wdf_BLOCKID_ANALYSIS';
     case 0x4c424c57:
-      return 'WDF_BLOCKID_SPECTRUMLABELS';
+      return 'Wdf_BLOCKID_SPECTRUMLABELS';
     case 0x4b484357:
-      return 'WDF_BLOCKID_CHECKSUM';
+      return 'Wdf_BLOCKID_CHECKSUM';
     case 0x44435852:
-      return 'WDF_BLOCKID_RXCALDATA';
+      return 'Wdf_BLOCKID_RXCALDATA';
     case 0x46435852:
-      return 'WDF_BLOCKID_RXCALFIT';
+      return 'Wdf_BLOCKID_RXCALFIT';
     case 0x4c414358:
-      return 'WDF_BLOCKID_XCAL';
+      return 'Wdf_BLOCKID_XCAL';
     case 0x48435253:
-      return 'WDF_BLOCKID_SPECSEARCH';
+      return 'Wdf_BLOCKID_SPECSEARCH';
     case 0x504d4554:
-      return 'WDF_BLOCKID_TEMPPROFILE';
+      return 'Wdf_BLOCKID_TEMPPROFILE';
     case 0x56434e55:
-      return 'WDF_BLOCKID_UNITCONVERT';
+      return 'Wdf_BLOCKID_UNITCONVERT';
     case 0x52505241:
-      return 'WDF_BLOCKID_ARPLATE';
+      return 'Wdf_BLOCKID_ARPLATE';
     case 0x43454c45:
-      return 'WDF_BLOCKID_ELECSIGN';
+      return 'Wdf_BLOCKID_ELECSIGN';
     case 0x4c584b42:
-      return 'WDF_BLOCKID_BKXLIST';
+      return 'Wdf_BLOCKID_BKXLIST';
     case 0x20585541:
-      return 'WDF_BLOCKID_AUXILARYDATA';
+      return 'Wdf_BLOCKID_AUXILARYDATA';
     case 0x474c4843:
-      return 'WDF_BLOCKID_CHANGELOG';
+      return 'Wdf_BLOCKID_CHANGELOG';
     case 0x46525553:
-      return 'WDF_BLOCKID_SURFACE';
+      return 'Wdf_BLOCKID_SURFACE';
     case 0xffffffff:
-      return 'WDF_BLOCKID_ANY';
+      return 'Wdf_BLOCKID_ANY';
     case 0x54455350:
-      return 'WDF_STREAM_IS_PSET';
+      return 'Wdf_STREAM_IS_PSET';
     case 0x4d545343:
-      return 'WDF_STREAM_IS_CSTM';
+      return 'Wdf_STREAM_IS_CSTM';
     default:
       throw new Error(`blockId ${blockId} is not defined`);
   }
 }
+
+export type MeasurementUnits =
+  | 'arbitrary units'
+  | 'Raman shift (cm-1)'
+  | 'wavenumber (nm)'
+  | '10-9 metres (nm)'
+  | 'electron volts (eV)'
+  | '10-6 metres (um)'
+  | 'counts'
+  | 'electrons'
+  | '10-3 metres (mm)'
+  | 'metres (m)'
+  | 'Temperature (K)'
+  | 'Pascals (Pa)'
+  | 'seconds (s)'
+  | 'milliseconds (ms)'
+  | 'Hours (hs)'
+  | 'Days (ds)'
+  | 'Pixels'
+  | 'Intensity'
+  | 'Relative Intensity'
+  | 'Degrees'
+  | 'Temperature (C)'
+  | 'Temperature (F)'
+  | 'Kelvin per minute'
+  | 'Filetime as Windows FileTime'
+  | 'Endmarker';
 
 /**
  * Get descriptive spectral data-unit from code
@@ -100,7 +169,7 @@ export function btypes(blockId: number): string {
  * @param num code
  * @return spectral data-units used
  */
-export function getMeasurementUnits(num: number): string {
+export function getMeasurementUnits(num: number): MeasurementUnits {
   switch (num) {
     case 0:
       return 'arbitrary units';
@@ -157,13 +226,40 @@ export function getMeasurementUnits(num: number): string {
   }
 }
 
+export type ListTypes =
+  | 'arbitrary'
+  | 'spectral'
+  | 'Intensity'
+  | 'X position'
+  | 'Y axis position'
+  | 'Z axis (vertical) position'
+  | 'R axis (rotary) position'
+  | 'Theta angle (rotary) position'
+  | 'phi angle (rotary) position'
+  | 'Temperature'
+  | 'Pressure'
+  | 'Time'
+  | 'Derived'
+  | 'Polarization'
+  | 'Focus Track Z position'
+  | 'Temperature Ramp rate'
+  | 'Spectrum Data Checksum'
+  | 'Bit Flags'
+  | 'Elapsed Time Intervals'
+  | 'Frequency'
+  | 'Microplate Well Spatial X'
+  | 'Microplate Well Spatial Y'
+  | 'Location Index'
+  | 'Well Reference'
+  | 'End Marker';
+
 /**
  * Get descriptive spectral data-unit from code
  * @export
  * @param code
  * @return unit to use in axis
  */
-export function getListType(unit: number): string {
+export function getListType(unit: number): ListTypes {
   switch (unit) {
     case 0:
       return 'arbitrary'; /**< arbitrary type */
@@ -247,6 +343,21 @@ export function getOverallSpectraDescription(
   }
 }
 
+/* exporting all the types will give more information when hovering on
+properties */
+export type ScanType =
+  | 'WdfScanType_Unspecified'
+  | 'WdfScanType_Static'
+  | 'WdfScanType_Continuous'
+  | 'WdfScanType_StepRepeat'
+  | 'WdfScanType_FilterScan'
+  | 'WdfScanType_FilterImage'
+  | 'WdfScanType_StreamLine'
+  | 'WdfScanType_StreamLineHR'
+  | 'WdfScanType_Point'
+  | 'WdfScanType_MultitrackStitched'
+  | 'WdfScanType_MultitrackDiscrete'
+  | 'WdfScanType_LineFocusMapping';
 /**
  *
  * Retrieves the name of the data collection method used (scan type)
@@ -255,7 +366,7 @@ export function getOverallSpectraDescription(
  * @return semantic scan type
  */
 
-export function getScanType(scanType: number): string {
+export function getScanType(scanType: number): ScanType {
   switch (scanType) {
     case 0x0000:
       return 'WdfScanType_Unspecified';

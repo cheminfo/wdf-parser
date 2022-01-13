@@ -11,25 +11,33 @@ describe('parse file header', () => {
     const wdfBuffer = new IOBuffer(wdf);
     const result = readFileHeader(wdfBuffer);
     expect(result).toMatchObject({
-      signature:
-        'WDF_BLOCKID_FILE' /* it is WDF file and not SPC or otherwise*/,
-      version: 1 /*the version of the WDF used */,
+      /* it is WDF file and not SPC or otherwise*/
+      signature: 'Wdf_BLOCKID_FILE',
+      /*the version of the WDF used */
+      version: 1,
+      /* fixed in 512*/
       fileHeaderSize: 512,
       user: 'Raman',
       title: 'Simple mapping measurement 1',
       appName: 'WiRE',
-      spare: [0, 0, 0, 0, 0, 0],
       /* number of actual spectra (capacity) */
-      nSpectra: 36,
+      spare: [0, 0, 0, 0, 0, 0],
       /*number of spectra collected */
+      nSpectra: 36,
       nCollected: 36,
-      yListCount: 1 /* > 1 means image */,
-      units: 'counts' /* for variable measured in this experiment */,
-      status: 0 /* no error */,
+      /* > 1 means image */
+      yListCount: 1,
+      /* for variable measured in this experiment */
+      xListCount: 1015,
+      units: 'counts',
+      /* error code. 0 is no error */
+      status: 0,
+      /* !=0 when flags.xyxy is set*/
       nTracks: 0,
       scanType: 'WdfScanType_Static',
     });
-    // console.log(result.nSpectra);
+    console.log(result.originCount);
+    // test number of keys in result object;
     expect(Object.keys(result)).toHaveLength(30);
   });
 });

@@ -1,7 +1,7 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import { SubheaderOrigin } from './readBlocks';
+import { HeaderOriginSet } from './readBlocks';
 import {
   getMeasurementUnits,
   getListType,
@@ -56,23 +56,32 @@ export function getUUId(Id: Uint8Array): string {
  * @returns The parameters
  */
 export interface FlagParameters {
-  [key: string]: boolean;
+  /** multiple X list and data block exist*/
+  xyxy: boolean;
+  /** checksum is enabled*/
+  checkSum: boolean;
+  /** hardware cosmic ray removal was enabled*/
+  cosmicRayRemoval: boolean;
+  /** separated X list for each spectrum */
+  multitrack: boolean;
+  /** saturated datasets exist*/
+  saturation: boolean;
+  /** a complete backup file has been created*/
+  fileBackup: boolean;
+  /** this is a temporary file set for Display Title else filename*/
+  temporary: boolean;
+  /** Indicates that file has been extracted from WdfVol file slice like X / Y / Z.*/
+  slice: boolean;
 }
 export function getFlagParameters(flag: number): FlagParameters {
-  const xyxy = (flag & 1) !== 0; /*multiple X list and data block exist*/
-  const checkSum = (flag & 2) !== 0; /*checksum is enabled*/
-  const cosmicRayRemoval =
-    (flag & 4) !== 0; /*hardware cosmic ray removal was enabled*/
-  const multitrack = (flag & 8) !== 0; /* separated X list for each spectrum */
-  const saturation = (flag & 16) !== 0; /* saturated datasets exist*/
-  const fileBackup =
-    (flag & 32) !== 0; /* a complete backup file has been created*/
-  const temporary =
-    (flag & 64) !==
-    0; /* this is a temporary file set for Display Title else filename*/
-  const slice =
-    (flag & 128) !==
-    0; /*Indicates that file has been extracted from WdfVol file slice like X / Y / Z.*/
+  const xyxy = (flag & 1) !== 0;
+  const checkSum = (flag & 2) !== 0;
+  const cosmicRayRemoval = (flag & 4) !== 0;
+  const multitrack = (flag & 8) !== 0;
+  const saturation = (flag & 16) !== 0;
+  const fileBackup = (flag & 32) !== 0;
+  const temporary = (flag & 64) !== 0;
+  const slice = (flag & 128) !== 0;
   return {
     xyxy,
     checkSum,
@@ -82,7 +91,7 @@ export function getFlagParameters(flag: number): FlagParameters {
     fileBackup,
     temporary,
     slice,
-  };
+  } as FlagParameters;
 }
 
 /**
@@ -143,7 +152,12 @@ export function fileTimeToDate(fileTime: bigint): Date {
   return new Date(Number(fileTime) / 10000 - 11644473600000);
 }
 
-export function subheaderOrigin(buffer: IOBuffer): SubheaderOrigin {
+/**
+ * Reads the header for each set in an origin block
+ * @param buffer
+ * @returns
+ */
+export function headerOriginSet(buffer: IOBuffer): HeaderOriginSet {
   const typeAndFlag = buffer.readUint32();
   /*not sure how to analyze flag yet */
   const flag = (typeAndFlag >> 31) as 0 | 1;
