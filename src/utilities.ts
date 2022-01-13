@@ -1,11 +1,7 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import {
-  getMeasurementUnits,
-  getListType,
-  OverallSpectraDescription,
-} from './maps';
+import { OverallSpectraDescription } from './maps';
 
 export type ReadBytes64 = (buffer: IOBuffer, nGroups: number) => number[];
 
@@ -33,7 +29,7 @@ export const readBytes64: ReadBytes64 = (buffer, nGroups) => {
  */
 export function isCorrupted(
   blockTypes: string[],
-  type:OverallSpectraDescription
+  type: OverallSpectraDescription,
 ): void {
   /*
    standard blocks which must be available in any wdf file
@@ -48,7 +44,9 @@ export function isCorrupted(
   ];
 
   // these must exist only for particular measurement type
-  if (type==='series'||type==='map') standardBlocks.push('WDF_BLOCKID_MAPAREA');
+  if (type === 'series' || type === 'map') {
+    standardBlocks.push('WDF_BLOCKID_MAPAREA');
+  }
 
   // here we store any missing block
   let notFound: string[] = [];
@@ -57,7 +55,6 @@ export function isCorrupted(
   standardBlocks.forEach((stb) => {
     if (!blockTypes.includes(stb)) notFound.push(stb);
   });
-
 
   if (notFound.length !== 0) {
     throw new Error(`File is corrupt. Missing blocks: ${notFound.join(' ,')}`);

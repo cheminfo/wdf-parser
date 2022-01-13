@@ -1,5 +1,6 @@
-import {IOBuffer} from 'iobuffer';
-/** all these functions take a simple numeric input and 
+/* eslint no-control-regex: 0 */
+import { IOBuffer } from 'iobuffer';
+/** all these functions take a simple numeric input and
 map it to a word or human readable output
 @module maps
 */
@@ -143,7 +144,7 @@ export function getBlockTypes(blockId: number): BlockTypes {
   }
 }
 
-/* Unit that the measurement recorded by the instrument/system is supposed to be in */ 
+/* Unit that the measurement recorded by the instrument/system is supposed to be in */
 export type MeasurementUnits =
   | 'arbitrary units'
   | 'Raman shift (cm-1)'
@@ -265,7 +266,7 @@ export type ListTypes =
 /**
  * Get descriptive data-unit for an axis from code
  * @export
- * @param unit 
+ * @param unit
  * @return unit to use in axis
  */
 export function getListType(unit: number): ListTypes {
@@ -332,7 +333,7 @@ export function getListType(unit: number): ListTypes {
  * @returns semantic type
  */
 export type OverallSpectraDescription =
-  | 'unspecified'  
+  | 'unspecified'
   | 'single'
   | 'series'
   | 'map';
@@ -341,7 +342,7 @@ export function getOverallSpectraDescription(
 ): OverallSpectraDescription {
   switch (type) {
     case 0:
-      return 'unspecified'; 
+      return 'unspecified';
     case 1:
       return 'single'; /** file contains a single spectrum */
     case 2:
@@ -434,7 +435,10 @@ export interface WdfSpectrumFlags {
 }
 /** Analyzes the information in lower and high part of the 64B number.
 Spectrum flags are details to be aware of when reading the spectra */
-export function getWdfSpectrumFlags(lower: number, higher: number): WdfSpectrumFlags {
+export function getWdfSpectrumFlags(
+  lower: number,
+  higher: number,
+): WdfSpectrumFlags {
   return {
     saturated: (lower & 1) !== 0,
     error: (lower & 0b10) !== 0,
@@ -443,12 +447,11 @@ export function getWdfSpectrumFlags(lower: number, higher: number): WdfSpectrumF
   } as WdfSpectrumFlags;
 }
 
-
 export interface AppVersion {
-  major:number,
-  minor:number,
-  patch:number,
-  build:number
+  major: number;
+  minor: number;
+  patch: number;
+  build: number;
 }
 
 /**
@@ -492,7 +495,7 @@ export interface FlagParameters {
 }
 
 /**
- * Gets the parameter in each bit of the flag. 
+ * Gets the parameter in each bit of the flag.
  * These parameters specify a particular file property
  * @param flag First byte of the main header
  * @returns The parameters

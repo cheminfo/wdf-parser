@@ -1,7 +1,7 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import { 
+import {
   getBlockTypes,
   BlockTypes,
   getMeasurementUnits,

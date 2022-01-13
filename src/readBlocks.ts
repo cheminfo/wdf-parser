@@ -1,7 +1,6 @@
 /* eslint no-control-regex: 0 */
 import { IOBuffer } from 'iobuffer';
 
-import { FileHeader } from './readFileHeader';
 import {
   getBlockTypes,
   getMeasurementUnits,
@@ -11,9 +10,10 @@ import {
   getUUId,
   fileTimeToDate,
   getHeaderOfSet,
-  HeaderOfSet
+  HeaderOfSet,
 } from './maps';
-import { isCorrupted, } from './utilities';
+import { FileHeader } from './readFileHeader';
+import { isCorrupted } from './utilities';
 
 /** represents the main data unit 'Block', we define the type and subtypes */
 export interface Block {
@@ -148,35 +148,43 @@ export function readBlockBody(
       /* iterate over each of the "subblocks", or sets. */
       for (let set = 0; set < nDataOriginSets; set++) {
         /* each set has a header with same structure */
-        const headerOfSet:HeaderOfSet = getHeaderOfSet(buffer);
+        const headerOfSet: HeaderOfSet = getHeaderOfSet(buffer);
         data.push(headerOfSet);
         /* origin holds a 64bit piece of important data per set, and the sets are = nSpectra */
-        const bodyOfSet: ArrayBuffer = buffer.readBytes(nSpectra*8).buffer;
+        const bodyOfSet: ArrayBuffer = buffer.readBytes(nSpectra * 8).buffer;
 
         const label = headerOfSet.label;
-        switch(label){
-        /* X|Y set */
-        case 'X':
-        case 'Y':{ data[set].axisOrigins = new Float64Array(bodyOfSet) }
-        /* Flags Set*/
-        case 'Flags': {
-          /* Spectra errors & metadata */
-          let spectrumFlags: WdfSpectrumFlags[] = [];
-          let spectrumFlagsRaw = new Uint32Array(bodyOfSet);
-          for (let i = 0; i < spectrumFlagsRaw.length; i = i + 2) {
-            const { [i]: lowerPart, [i + 1]: higherPart } = spectrumFlagsRaw;
-            spectrumFlags.push(getWdfSpectrumFlags(lowerPart, higherPart));
+        switch (label) {
+          /* X|Y set */
+          case 'X':
+          case 'Y': {
+            data[set].axisOrigins = new Float64Array(bodyOfSet);
+            break;
           }
-          data[set].spectrumFlags = spectrumFlags;
-        } 
-        case 'Time': {
-          let spectrumDates: Date[] = [];
-          new BigUint64Array(bodyOfSet).forEach((spectraDate) => {
-            spectrumDates.push(fileTimeToDate(spectraDate));
-          });
-          data[set].spectrumDates = spectrumDates;
-        } 
-        default:{ data[set].otherValues = new BigUint64Array(bodyOfSet) }
+          /* Flags Set*/
+          case 'Flags': {
+            /* Spectra errors & metadata */
+            let spectrumFlags: WdfSpectrumFlags[] = [];
+            let spectrumFlagsRaw = new Uint32Array(bodyOfSet);
+            for (let i = 0; i < spectrumFlagsRaw.length; i = i + 2) {
+              const { [i]: lowerPart, [i + 1]: higherPart } = spectrumFlagsRaw;
+              spectrumFlags.push(getWdfSpectrumFlags(lowerPart, higherPart));
+            }
+            data[set].spectrumFlags = spectrumFlags;
+            break;
+          }
+          case 'Time': {
+            let spectrumDates: Date[] = [];
+            new BigUint64Array(bodyOfSet).forEach((spectraDate) => {
+              spectrumDates.push(fileTimeToDate(spectraDate));
+            });
+            data[set].spectrumDates = spectrumDates;
+            break;
+          }
+          default: {
+            data[set].otherValues = new BigUint64Array(bodyOfSet);
+            break;
+          }
         }
       }
 
@@ -213,4 +221,4 @@ export function readAllBlocks(
   isCorrupted(blockHeaderTypes, fileHeader.type);
 
   return blocks;
- }
+}
