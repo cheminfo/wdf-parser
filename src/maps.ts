@@ -443,7 +443,7 @@ export function getWdfSpectrumFlags(
     saturated: (lower & 1) !== 0,
     error: (lower & 0b10) !== 0,
     cosmicRay: (lower & 0b100) !== 0,
-    errorCode: higher >> 32,
+    errorCode: higher >>> 31,
   } as WdfSpectrumFlags;
 }
 
@@ -537,7 +537,7 @@ export interface HeaderOfSet {
   /** type i.e: Spectral, Spatial, T, P, Checksum, Time */
   type: string;
   /** Important Origin 1, Alternative Origin 0 */
-  flag: 1 | 0;
+  flag: 'important'|'alternative'
   /** The units of the origin list values. i.e cm-1, nm, etc */
   unit: string;
   /** Identified for the block i.e X, Y, Cheksum */
@@ -553,8 +553,9 @@ export interface HeaderOfSet {
  */
 export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   const typeAndFlag = buffer.readUint32();
-  const flag = (typeAndFlag >> 31) as 0 | 1;
-  const type = getListType(typeAndFlag & (2 ** 15 - 1));
+  /* >>> because it is unsigned integer */ 
+  const flag = (typeAndFlag >>> 31) === 1 ? 'important': 'alternative';
+  const type = getListType(typeAndFlag & (2 ** 14 - 1));
   const unit = getMeasurementUnits(buffer.readUint32());
   const label = buffer.readChars(16).replace(/\x00/g, '');
   return { flag, type, unit, label };

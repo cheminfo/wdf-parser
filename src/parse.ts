@@ -15,18 +15,17 @@ import { analyzeLogs, ParsedLogs } from './analyzeLogs';
 interface Wdf {
   fileHeader: FileHeader;
   blocks: Block[];
-  logs: undefined;
 }
 /**
  * Parses an WDF file
  *
  * @param data WDF file buffer
- * @return Object containing all the information from the WDF file
+ * @return Object containing all the parsed information from the WDF file
  */
 export function parse(data: Buffer | ArrayBuffer): Wdf {
   const iobuffer = new IOBuffer(data);
   const fileHeader = readFileHeader(iobuffer);
   const blocks = readAllBlocks(iobuffer, fileHeader);
-  const logs = undefined; //yet to write parser
-  return { fileHeader, blocks, logs };
+  return { fileHeader, blocks };
 }
+
