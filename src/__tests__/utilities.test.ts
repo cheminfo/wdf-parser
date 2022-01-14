@@ -21,20 +21,20 @@ test('analyze different group of bytes', () => {
 });
 
 test('File is corrupted', () => {
-const type = 'map';
-let blocks = [
-'WDF_BLOCKID_DATA',
-'WDF_BLOCKID_YLIST',
-'WDF_BLOCKID_XLIST',
-'WDF_BLOCKID_ORIGIN'
-]
-expect(()=>isCorrupted(blocks,type)).toThrow('Missing blocks')
-blocks = [
-'WDF_BLOCKID_DATA',
-'WDF_BLOCKID_YLIST',
-'WDF_BLOCKID_XLIST',
-'WDF_BLOCKID_ORIGIN',
-'WDF_BLOCKID_MAPAREA'
-]
-expect(isCorrupted(blocks,type)).toBeUndefined()
-})
+  const type = 'map';
+  let blocks = [
+    'WDF_BLOCKID_DATA',
+    'WDF_BLOCKID_YLIST',
+    'WDF_BLOCKID_XLIST',
+    'WDF_BLOCKID_ORIGIN',
+  ];
+  expect(() => isCorrupted(blocks, type)).toThrow('Missing blocks');
+  blocks = [
+    'WDF_BLOCKID_DATA',
+    'WDF_BLOCKID_YLIST',
+    'WDF_BLOCKID_XLIST',
+    'WDF_BLOCKID_ORIGIN',
+    'WDF_BLOCKID_MAPAREA',
+  ];
+  expect(isCorrupted(blocks, type)).toBeUndefined();
+});

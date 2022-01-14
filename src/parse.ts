@@ -28,4 +28,3 @@ export function parse(data: Buffer | ArrayBuffer): Wdf {
   const blocks = readAllBlocks(iobuffer, fileHeader);
   return { fileHeader, blocks };
 }
-

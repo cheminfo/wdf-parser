@@ -537,7 +537,7 @@ export interface HeaderOfSet {
   /** type i.e: Spectral, Spatial, T, P, Checksum, Time */
   type: string;
   /** Important Origin 1, Alternative Origin 0 */
-  flag: 'important'|'alternative'
+  flag: 'important' | 'alternative';
   /** The units of the origin list values. i.e cm-1, nm, etc */
   unit: string;
   /** Identified for the block i.e X, Y, Cheksum */
@@ -553,8 +553,8 @@ export interface HeaderOfSet {
  */
 export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   const typeAndFlag = buffer.readUint32();
-  /* >>> because it is unsigned integer */ 
-  const flag = (typeAndFlag >>> 31) === 1 ? 'important': 'alternative';
+  /* >>> because it is unsigned integer */
+  const flag = typeAndFlag >>> 31 === 1 ? 'important' : 'alternative';
   const type = getListType(typeAndFlag & (2 ** 14 - 1));
   const unit = getMeasurementUnits(buffer.readUint32());
   const label = buffer.readChars(16).replace(/\x00/g, '');
