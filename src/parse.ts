@@ -1,18 +1,30 @@
 import { IOBuffer } from 'iobuffer';
 
-/**
- * My module
- * @returns A very important number
- */
-export function parse(data: Buffer | ArrayBuffer): object {
-  const iobuffer = new IOBuffer(data);
+import { readAllBlocks, Block } from './readBlocks';
+import { readFileHeader, FileHeader } from './readFileHeader';
+/*
+import { analyzeLogs, ParsedLogs } from './analyzeLogs';
+*/
 
-  const result: any = {};
-  const firstByte = iobuffer.readByte();
-  if (firstByte === 87) {
-    result.fileKind = 'wdf file';
-  }
-  iobuffer.readFloat32();
-  console.log(firstByte);
-  return result;
+/**
+ * wdf-parser takes a WDF input file as a buffer or array buffer
+ * and retrieves an object storing all metadata, data and information from the
+ * original "input.wdf" file.
+ */
+
+interface Wdf {
+  fileHeader: FileHeader;
+  blocks: Block[];
+}
+/**
+ * Parses an WDF file
+ *
+ * @param data WDF file buffer
+ * @return Object containing all the parsed information from the WDF file
+ */
+export function parse(data: Buffer | ArrayBuffer): Wdf {
+  const iobuffer = new IOBuffer(data);
+  const fileHeader = readFileHeader(iobuffer);
+  const blocks = readAllBlocks(iobuffer, fileHeader);
+  return { fileHeader, blocks };
 }
