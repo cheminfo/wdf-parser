@@ -34,19 +34,13 @@ export interface BlockHeader {
 }
 
 /** body is different for different blocks */
-export type BlockBody = DataBlock | ListBlock | OriginBlock[] | []; //temporary type.
+export type BlockBody = DataBlock | ListBlock | OriginBlock[] | [] ; //temporary type.
 
-/* Types for the block body (depends on the blockHeader 'Type') */
-/** Array of arrays, each of them a spectra as Float32Array */
-export interface DataBlock {
-  /** Raw data for the spectra */
-  spectras: Float32Array[];
-}
+/** raw spectral (array or arrays) data */
+export interface DataBlock { spectras: Float32Array[] }
 
-/** Stores X or Y Axis Values (the same for each spectrum in a file,
-mapped to real values using origin values in ORIGIN block).
-data is ordered high to low or L to H,
-and the spacing between points need not be constant.
+/** Stores X or Y Axis Values (the same for each spectrum in a file)
+data is ordered high to low or L to H, and the spacing between points need not be constant.
 */
 export interface ListBlock {
   /** type of data in list i.e: Spectral, Spatial, T, P, Checksum, Time */
@@ -57,7 +51,8 @@ export interface ListBlock {
   list: Float32Array;
 }
 
-/** Stores critical info about spectras/images.  Must-be blocks: Time (spectra acquisition), Flags raised during each aquisition, Checksum values for each dataset if CFR was in use.  */
+/** Stores critical info about spectras/images.  Must-be blocks: Time (spectra acquisition), Flags
+ * raised ...*/
 export interface OriginBlock extends HeaderOfSet {
   axisOrigins?: Float64Array | BigUint64Array;
   /** Array of objects, Flags for a each spectrum, if a spectrum.
@@ -83,7 +78,6 @@ export function readBlockHeader(
   const blockType: string = getBlockTypes(buffer.readUint32());
   const uuid: string = getUUId(buffer.readBytes(4));
   const blockSize = Number(buffer.readBigUint64()); // Bytes
-
   /* assign with appropriate type */
   return { blockType, uuid, blockSize } as BlockHeader;
 }
@@ -98,11 +92,11 @@ export function readBlockHeader(
  */
 export function readBlockBody(
   buffer: IOBuffer,
-  fileHeader: FileHeader | Pick<FileHeader, 'nSpectra' | 'nPoints'>,
+  fileHeader: FileHeader | Pick<FileHeader, 'nSpectra' | 'nPoints' | 'yListCount'>,
   blockHeader: BlockHeader | Pick<BlockHeader, 'blockSize' | 'blockType'>,
   offset?: number,
 ): BlockBody {
-  const { nSpectra, nPoints } = fileHeader;
+  const { nSpectra, nPoints, yListCount } = fileHeader;
   const { blockSize, blockType } = blockHeader;
 
   /*an offset can be assigned manually if desired*/
@@ -111,33 +105,44 @@ export function readBlockBody(
   /*take some measurements*/
   const headerSize = 16;
   const bodySize = blockSize - headerSize;
-
+ 
+  /* don't analyze YLIST if no image */
+  if (blockType==='WDF_BLOCKID_YLIST' && yListCount<=1){
+  buffer.offset+=bodySize
+  return []
+  }
   /* using case a:{} scopes the variables */
   switch (blockType) {
     case 'WDF_BLOCKID_DATA': {
       let spectras32: Float32Array[] = [];
       for (let i = 0; i < nSpectra; i++) {
-        const spectra8: Uint8Array = buffer.readBytes(4 * nPoints);
-        spectras32.push(new Float32Array(spectra8.buffer));
+        let currentSpectra = new Float32Array(nPoints)
+        for (let j=0; j<nPoints; j++){
+        currentSpectra[j] = buffer.readFloat32();
+        }
+        spectras32.push(currentSpectra);
       }
       return { spectras: spectras32 } as DataBlock;
     }
     /*values not necessarily equally spaced, they're ordered Low to High or H to L*/
     case 'WDF_BLOCKID_XLIST':
     case 'WDF_BLOCKID_YLIST': {
-      /*The XList block contains the (npoint) unit values for the x axis. The YList block stores
-       * values used in cases where a 2D image is taken (i.e. a CCD image or a filter image). For
-       * spectra this is a single value and is usually ignored */
-      const first8Bytes: Uint8Array = buffer.readBytes(8);
-      const [type, units] = new Uint32Array(first8Bytes.buffer);
-
+      /*XList contains (npoint) unit values for the x axis. The YList block stores
+       * values used in cases where a 2D image is taken 
+       * For spectra this is a single value and is usually ignored */
+      const type = buffer.readUint32();
+      const units = buffer.readUint32();
       // For the XList block, the number of floats is equal to npoints.
-      const axisValues: Uint8Array = buffer.readBytes(bodySize - 8);
+      const nXorYPoints = (bodySize-8)/4
+      let list = new Float32Array(nXorYPoints)
+      for(let i=0; i < nXorYPoints ; i++){
+        list[i] = buffer.readFloat32()
+      }
       return {
         type: getListType(type),
         units: getMeasurementUnits(units),
         /* for only-spectral files, YLIST.list will be a single meaningless number (array length 1) */
-        list: new Float32Array(axisValues.buffer),
+        list
       } as ListBlock;
     }
 
@@ -147,42 +152,45 @@ export function readBlockBody(
 
       /* iterate over each of the "subblocks", or sets. */
       for (let set = 0; set < nDataOriginSets; set++) {
+
         /* each set has a header with same structure */
         const headerOfSet: HeaderOfSet = getHeaderOfSet(buffer);
         data.push(headerOfSet);
-        /* origin holds a 64bit piece of important data per set, and the sets are = nSpectra */
-        const bodyOfSet: ArrayBuffer = buffer.readBytes(nSpectra * 8).buffer;
 
-        const label = headerOfSet.label;
-        switch (label) {
-          /* X|Y set */
+        const typeOfSet = headerOfSet.label;
+
+        switch (typeOfSet) {
+
           case 'X':
           case 'Y': {
-            data[set].axisOrigins = new Float64Array(bodyOfSet);
+            let os = new Float64Array(nSpectra)
+            for(let i=0; i<nSpectra; i++){ os[i] = buffer.readFloat64() }
+            data[set].axisOrigins = os;
             break;
           }
-          /* Flags Set*/
+
           case 'Flags': {
             /* Spectra errors & metadata */
             let spectrumFlags: WdfSpectrumFlags[] = [];
-            let spectrumFlagsRaw = new Uint32Array(bodyOfSet);
-            for (let i = 0; i < spectrumFlagsRaw.length; i = i + 2) {
-              const { [i]: lowerPart, [i + 1]: higherPart } = spectrumFlagsRaw;
-              spectrumFlags.push(getWdfSpectrumFlags(lowerPart, higherPart));
+            for (let i = 0; i < nSpectra; i++) {
+              const lower = buffer.readUint32()
+              const higher = buffer.readUint32()
+              spectrumFlags[i] = getWdfSpectrumFlags(lower, higher);
             }
             data[set].spectrumFlags = spectrumFlags;
             break;
           }
           case 'Time': {
             let spectrumDates: Date[] = [];
-            new BigUint64Array(bodyOfSet).forEach((spectraDate) => {
-              spectrumDates.push(fileTimeToDate(spectraDate));
-            });
+            for (let i=0; i< nSpectra; i++){
+              spectrumDates[i] = fileTimeToDate(buffer.readBigUint64())
+            }
             data[set].spectrumDates = spectrumDates;
             break;
           }
           default: {
-            data[set].otherValues = new BigUint64Array(bodyOfSet);
+            buffer.offset+=nSpectra*8
+            //data[set].otherValues = new BigUint64Array(bodyOfSet);
             break;
           }
         }
@@ -193,7 +201,7 @@ export function readBlockBody(
 
     /* default case for other not analyzed (but read) file blocks */
     default:
-      buffer.readBytes(bodySize);
+      buffer.offset+=bodySize
       return [];
   }
 }
