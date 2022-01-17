@@ -1,10 +1,8 @@
 import { IOBuffer } from 'iobuffer';
 
-import { readAllBlocks, Block } from './readBlocks';
+import { Block, readBlock } from './readBlock';
 import { readFileHeader, FileHeader } from './readFileHeader';
-/*
-import { analyzeLogs, ParsedLogs } from './analyzeLogs';
-*/
+import { isCorrupted } from './utilities';
 
 /**
  * wdf-parser takes a WDF input file as a buffer or array buffer
@@ -23,8 +21,19 @@ interface Wdf {
  * @return Object containing all the parsed information from the WDF file
  */
 export function parse(data: Buffer | ArrayBuffer): Wdf {
-  const iobuffer = new IOBuffer(data);
-  const fileHeader = readFileHeader(iobuffer);
-  const blocks = readAllBlocks(iobuffer, fileHeader);
-  return { fileHeader, blocks };
+  const buffer = new IOBuffer(data);
+  const fileHeader = readFileHeader(buffer);
+
+  let blocks: Block[] = [];
+  let blockHeaderTypes: string[] = [];
+  while (buffer.length > buffer.offset) {
+    const block = readBlock(buffer, fileHeader);
+    blocks.push(block);
+    blockHeaderTypes.push(block.blockType);
+  }
+
+  /* check if the block headers are complete */
+  isCorrupted(blockHeaderTypes, fileHeader.type);
+
+  return { fileHeader, blocks }
 }
