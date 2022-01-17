@@ -87,7 +87,7 @@ export interface FileHeader {
  */
 export function readFileHeader(buffer: IOBuffer): FileHeader {
   /* make sure the offset is 0 to read the file header */
-  buffer.offset = 0
+  buffer.offset = 0;
 
   /* next we determine all the properties included in the file header */
   const signature: BlockTypes = getBlockTypes(buffer.readUint32());
@@ -115,7 +115,7 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const yListCount = buffer.readUint32();
   const xListCount = buffer.readUint32();
   const originCount = buffer.readUint32();
-  const appName: string = buffer.readUtf8(24).replace(/\x00/g, ''); 
+  const appName: string = buffer.readUtf8(24).replace(/\x00/g, '');
   /* tested replaceAll('\x00\','') but it is slower */
   const appVersion: AppVersion = getAppVersion(buffer.readBytes(8));
   const scanType: ScanType = getScanType(buffer.readUint32());

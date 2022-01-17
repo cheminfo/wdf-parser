@@ -1,6 +1,6 @@
 import { IOBuffer } from 'iobuffer';
 
-import {getBlockTypes, getUUId } from './maps';
+import { getBlockTypes, getUUId } from './maps';
 
 export interface BlockHeader {
   uuid: string;
@@ -28,5 +28,5 @@ export function readBlockHeader(
   const uuid: string = getUUId(buffer.readBytes(4));
   const blockSize = Number(buffer.readBigUint64()); // Bytes
   /* assign with appropriate type */
-  return { blockType, uuid, blockSize }
+  return { blockType, uuid, blockSize };
 }

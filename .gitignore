@@ -119,3 +119,8 @@ dist
 
 lib
 lib-esm
+
+# personal tests we don't wish to push
+.__tests__
+
+

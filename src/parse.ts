@@ -35,5 +35,5 @@ export function parse(data: Buffer | ArrayBuffer): Wdf {
   /* check if the block headers are complete */
   isCorrupted(blockHeaderTypes, fileHeader.type);
 
-  return { fileHeader, blocks }
+  return { fileHeader, blocks };
 }
