@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.1](https://www.github.com/cheminfo/wdf-parser/compare/v0.1.0...v0.1.1) (2022-01-18)
+
+
+### Bug Fixes
+
+* export Wdf interface ([4416399](https://www.github.com/cheminfo/wdf-parser/commit/44163995402e9e2c45cdc9d5b50ca2746c0d006e))
+
 ## 0.1.0 (2022-01-18)
 
 
