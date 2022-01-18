@@ -10,7 +10,7 @@ import { isCorrupted } from './utilities';
  * original "input.wdf" file.
  */
 
-interface Wdf {
+export interface Wdf {
   fileHeader: FileHeader;
   blocks: Block[];
 }
