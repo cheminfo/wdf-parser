@@ -86,6 +86,9 @@ export interface FileHeader {
  * @return File Metadata
  */
 export function readFileHeader(buffer: IOBuffer): FileHeader {
+  /* make sure the offset is 0 to read the file header */
+  buffer.offset = 0;
+
   /* next we determine all the properties included in the file header */
   const signature: BlockTypes = getBlockTypes(buffer.readUint32());
   if (signature !== 'WDF_BLOCKID_FILE') {
@@ -113,6 +116,7 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const xListCount = buffer.readUint32();
   const originCount = buffer.readUint32();
   const appName: string = buffer.readUtf8(24).replace(/\x00/g, '');
+  /* tested replaceAll('\x00\','') but it is slower */
   const appVersion: AppVersion = getAppVersion(buffer.readBytes(8));
   const scanType: ScanType = getScanType(buffer.readUint32());
   const type: OverallSpectraDescription = getOverallSpectraDescription(
@@ -129,33 +133,33 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const free: number[] = readBytes64(buffer, 4);
   const reserved: number[] = readBytes64(buffer, 4);
   const fileHeader: FileHeader = {
-    signature,
-    version,
-    fileHeaderSize,
-    flags,
-    uuid,
-    unused0,
-    unused1,
-    nTracks,
-    status,
-    nPoints,
+    title,
+    type,
+    units,
     nSpectra,
-    nCollected,
-    nAccum,
+    nPoints,
+    scanType,
+    laserWavenum,
     yListCount,
     xListCount,
+    nCollected,
+    nAccum,
     originCount,
-    appName,
-    appVersion,
-    scanType,
-    type,
+    flags,
+    nTracks,
+    status,
+    user,
     timeStart,
     timeEnd,
-    units,
-    laserWavenum,
+    signature,
+    appName,
+    appVersion,
+    version,
+    fileHeaderSize,
+    uuid,
     spare,
-    user,
-    title,
+    unused0,
+    unused1,
     padding,
     free,
     reserved,
