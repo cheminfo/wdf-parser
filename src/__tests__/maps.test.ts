@@ -4,6 +4,7 @@ import {
   getOverallSpectraDescription,
   getListType,
   getMeasurementUnits,
+  windowsTimeToMs,
 } from '../maps';
 
 test('getBlockTypes return value at different inputs', (): void => {
@@ -136,5 +137,11 @@ test('Type of scan done corresponds to value', (): void => {
   expect(getScanType(1024)).toBe('WdfScanType_LineFocusMapping');
   expect(() => getScanType(25)).toThrow(
     '25 is not in the set of possible values',
+  );
+});
+
+test('microsoft date in ns to unix date in ms', () => {
+  expect(new Date(windowsTimeToMs(132775630299482771n))).toStrictEqual(
+    new Date('2021-10-01T11:57:09.948Z'),
   );
 });

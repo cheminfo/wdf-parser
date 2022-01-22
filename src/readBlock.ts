@@ -6,7 +6,7 @@ import {
   getListType,
   getWdfSpectrumFlags,
   WdfSpectrumFlags,
-  fileTimeToDate,
+  windowsTimeToMs,
   getHeaderOfSet,
   HeaderOfSet,
 } from './maps';
@@ -44,7 +44,8 @@ export interface OriginBlock extends HeaderOfSet {
   /** Array of objects, Flags for a each spectrum, if a spectrum.
 Ex: error, errorCode, saturated, cosmicRay */
   spectrumFlags?: WdfSpectrumFlags[];
-  spectrumDates?: Date[];
+  /** Array of dates in Milliseconds since Epoch */
+  spectrumDates?: number[];
   otherValues?: BigUint64Array;
 }
 
@@ -165,9 +166,9 @@ export function readBlock(
             break;
           }
           case 'Time': {
-            let spectrumDates: Date[] = [];
+            let spectrumDates: number[] = [];
             for (let i = 0; i < nSpectra; i++) {
-              spectrumDates[i] = fileTimeToDate(buffer.readBigUint64());
+              spectrumDates[i] = windowsTimeToMs(buffer.readBigUint64());
             }
             data[set].spectrumDates = spectrumDates;
             break;

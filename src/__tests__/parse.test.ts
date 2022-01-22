@@ -9,6 +9,8 @@ describe('parse', () => {
     const result = parse(wdf);
     expect(Object.keys(result.fileHeader)).toHaveLength(30);
     expect(result).toMatchSnapshot();
-    // we have another parser that should give a pretty similar result
+    expect(new Date(result.fileHeader.timeEnd)).toStrictEqual(
+      new Date('2021-10-01T11:57:09.948Z'),
+    );
   });
 });
