@@ -454,27 +454,6 @@ export interface AppVersion {
   build: number;
 }
 
-/**
- * Build the semantic versioning
- * @param buffer WDF buffer
- * @return Object containing WDF semantic versioning
- */
-export function getAppVersion(version: Uint8Array): AppVersion {
-  const [major, minor, patch, build] = new Uint16Array(version.buffer);
-  return { major, minor, patch, build };
-}
-
-/**
- * Calculate the universal identifier (as a string) for files and blocks
- * @param buffer WDF buffer
- * @param Id values for Id in Uint8Array
- * @return uuid as a string
- */
-export function getUUId(Id: Uint8Array): string {
-  let version = new Uint32Array(Id.buffer);
-  return version.join('.');
-}
-
 export interface FlagParameters {
   /** multiple X list and data block exist*/
   xyxy: boolean;
@@ -525,12 +504,12 @@ export function getFlagParameters(flag: number): FlagParameters {
  * Convert a Windows FILETIME to a Javascript Date
  * intervals since January 1, 1601 (UTC)
  * @export
- * @param fileTime - the number of 100ns
- * @returns {Date}
+ * @param fileTime - the number of 100ns in Windows Filetime
+ * @returns Milliseconds since Epoch
  * from https://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html
  **/
-export function fileTimeToDate(fileTime: bigint): Date {
-  return new Date(Number(fileTime) / 10000 - 11644473600000);
+export function windowsTimeToMs(fileTime: bigint) {
+  return Number(fileTime) / 10000 - 11644473600000;
 }
 
 export interface HeaderOfSet {
@@ -559,4 +538,25 @@ export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   const unit = getMeasurementUnits(buffer.readUint32());
   const label = buffer.readChars(16).replace(/\x00/g, '');
   return { flag, type, unit, label };
+}
+
+/**
+ * Build the semantic versioning
+ * @param buffer WDF buffer
+ * @return Object containing WDF semantic versioning
+ */
+export function getAppVersion(version: Uint8Array): AppVersion {
+  const [major, minor, patch, build] = new Uint16Array(version.buffer);
+  return { major, minor, patch, build };
+}
+
+/**
+ * Calculate the universal identifier (as a string) for files and blocks
+ * @param buffer WDF buffer
+ * @param Id values for Id in Uint8Array
+ * @return uuid as a string
+ */
+export function getUUId(Id: Uint8Array): string {
+  let version = new Uint32Array(Id.buffer);
+  return version.join('.');
 }

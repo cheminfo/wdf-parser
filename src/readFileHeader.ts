@@ -15,6 +15,7 @@ import {
   getFlagParameters,
   FlagParameters,
   AppVersion,
+  windowsTimeToMs,
 } from './maps';
 import { readBytes64 } from './utilities';
 
@@ -57,9 +58,9 @@ export interface FileHeader {
   scanType: ScanType;
   /** measurement type - WdfType enum  */
   type: OverallSpectraDescription;
-  /** collection start time as FILETIME */
+  /** collection start time as milliseconds since Epoch */
   timeStart: number;
-  /** collection end time as FILETIME */
+  /** collection end time as milliseconds since Epoch */
   timeEnd: number;
   /** spectral data units (one of WdfDataUnits) */
   units: MeasurementUnits;
@@ -122,8 +123,8 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const type: OverallSpectraDescription = getOverallSpectraDescription(
     buffer.readUint32(),
   );
-  const timeStart = Number(buffer.readBigUint64());
-  const timeEnd = Number(buffer.readBigUint64());
+  const timeStart = windowsTimeToMs(buffer.readBigUint64());
+  const timeEnd = windowsTimeToMs(buffer.readBigUint64());
   const units: MeasurementUnits = getMeasurementUnits(buffer.readUint32());
   const laserWavenum = buffer.readFloat32();
   const spare: number[] = readBytes64(buffer, 6);
