@@ -1,4 +1,8 @@
 /* eslint no-control-regex: 0 */
+/**
+ * Reads a block in wdf file
+ * @module readBlock
+ */
 import { IOBuffer } from 'iobuffer';
 
 import {
@@ -13,48 +17,53 @@ import {
 import { BlockHeader, readBlockHeader } from './readBlockHeader';
 import { FileHeader } from './readFileHeader';
 
-/** represents the main data unit 'Block', we define the type and subtypes */
+/** 
+ * Represents the main data unit 'Block', extends [[`BlockHeader`]]
+ * @extends BlockHeader
+ */
 export interface Block extends BlockHeader {
+  /** Single (array) or Multiple (array of arrays) spectra */
   spectrum?: DataBlock;
+  /** x coordinates object */
   xList?: ListBlock;
+  /** May be relevant for images */
   yList?: ListBlock;
+  /** x and y origins when mapping + other data */
   origins?: OriginBlock[];
   //data?:
 }
 
-/** raw spectral (array or arrays) data */
+/** Raw spectral data */
 export type DataBlock = Float32Array[] | Float32Array;
 
-/** Stores X or Y Axis Values (the same for each spectrum in a file)
-data is ordered high to low or L to H, and the spacing between points need not be constant.
-*/
+/** XList or YList share this schema */
 export interface ListBlock {
   /** type of data in list i.e: Spectral, Spatial, T, P, Checksum, Time */
   type: string;
   /** The units of type. i.e cm-1, nm, etc */
   units: string;
-  /** the data stored, if any */
+  /**  data is ordered high to low or L to H, spacing bw points need not be constant. */
   values: Float32Array;
 }
 
-/** Stores critical info about spectras/images.  Must-be blocks: Time (spectra acquisition), Flags
- * raised ...*/
+/** Stores critical info about spectras/images.  Must-be blocks: Time (spectra acquisition), Flags raised ...*/
 export interface OriginBlock extends HeaderOfSet {
+  /** Origins used for maps, etc */
   axisOrigins?: Float64Array | BigUint64Array;
   /** Array of objects, Flags for a each spectrum, if a spectrum.
 Ex: error, errorCode, saturated, cosmicRay */
   spectrumFlags?: WdfSpectrumFlags[];
   /** Array of dates in Milliseconds since Epoch */
   spectrumDates?: number[];
+  /** parsed values without a known/specific meaning */
   otherValues?: BigUint64Array;
 }
 
 /**
  * Parses Block body according to the specific block type
- * @param buffer WDF buffer
- * @param fileHeader full file header | {nSpectra,nPoints}
- * @param blockHeader full block header | {blockSize,blockType}
- * @param offset Where the block's body starts | uses current buffer offset
+ * @param buffer - from new IOBuffer(WdfFile)
+ * @param fileHeader - full file header | {nSpectra,nPoints, yListCount}
+ * @param offset - Where the block's body starts | uses current buffer offset
  * @return array of datapoints and current buffer offset
  */
 export function readBlock(
@@ -62,8 +71,9 @@ export function readBlock(
   fileHeader:
     | FileHeader
     | Pick<FileHeader, 'nSpectra' | 'nPoints' | 'yListCount'>,
-  offset?: number,
+  offset?: number
 ): Block {
+
   /* an offset can be assigned manually if desired */
   if (offset) buffer.offset = offset;
 
@@ -102,7 +112,7 @@ export function readBlock(
         spectras32.length === 1 ? spectras32.flat() : spectras32;
       break;
     }
-    /*values not necessarily equally spaced, they're ordered Low to High or H to L*/
+
     case 'WDF_BLOCKID_XLIST':
     case 'WDF_BLOCKID_YLIST': {
       /*XList contains (npoint) unit values for the x axis.*/

@@ -25,6 +25,8 @@ export const readBytes64: ReadBytes64 = (buffer, nGroups) => {
 /**
  * Checks whether the wdf file is corrupted.
  * @param blockTypes all the blocks found in file (excluding file header)
+ * @param type Describing the what kind of spectral data we have. See
+ * [[`OverallSpectraDescription`]].
  * @return void for sane file | throws an error with a list of missing blocks
  */
 export function isCorrupted(

@@ -2,19 +2,20 @@ import { IOBuffer } from 'iobuffer';
 
 import { getBlockTypes, getUUId } from './maps';
 
+/** Structure for the 16B Block Header */
 export interface BlockHeader {
-  uuid: string;
   /** block identity */
-  blockType: string;
+  uuid: string;
   /** block size including header (16B) in bytes */
-  blockSize: number;
+  blockType: string;
   /** unique id block. uuid=0 -> unique block with this type */
+  blockSize: number;
 }
 
 /**
  * Block Header Parsing - Block's first 16 bytes
- * @param buffer WDF buffer
- * @param [offset] byte number where to start reading | uses current offset
+ * @param buffer Wdf as IOBuffer, i.e `new IOBuffer(file.wdf)`.
+ * @param offset byte number where to start reading | uses current offset
  * @return blockHeader Block metadata
  */
 export function readBlockHeader(
