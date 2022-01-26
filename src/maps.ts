@@ -50,7 +50,7 @@ export type BlockTypes =
   | 'WDF_STREAM_IS_CSTM';
 
 /**
- * Maps numeric type for block-header or file-header to a semantic label (a name). 
+ * Maps numeric type for block-header or file-header to a semantic label (a name).
  * @param blockId type code
  * @return Semantic label for block
  */
@@ -432,7 +432,7 @@ export interface WdfSpectrumFlags {
   errorCode: number;
 }
 
-/** 
+/**
  * Analyzes the information in lower and high part of the 64B number.
 Spectrum flags are details to be aware of when reading the spectra.
   @param lower lower first 32 bytes
@@ -447,9 +447,8 @@ export function getWdfSpectrumFlags(
     error: (lower & 0b10) !== 0,
     cosmicRay: (lower & 0b100) !== 0,
     errorCode: higher >>> 31,
-  } 
+  };
 }
-
 
 /** Flags raised in the experiment */
 export interface FlagParameters {
@@ -495,7 +494,7 @@ export function getFlagParameters(flag: number): FlagParameters {
     fileBackup,
     temporary,
     slice,
-  }
+  };
 }
 
 /**
@@ -537,7 +536,6 @@ export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   const label = buffer.readChars(16).replace(/\x00/g, '');
   return { flag, type, unit, label };
 }
-
 
 /** WiRE version run in the experiment */
 export interface AppVersion {

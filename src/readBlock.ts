@@ -17,7 +17,7 @@ import {
 import { BlockHeader, readBlockHeader } from './readBlockHeader';
 import { FileHeader } from './readFileHeader';
 
-/** 
+/**
  * Represents the main data unit 'Block', extends [[`BlockHeader`]]
  * @extends BlockHeader
  */
@@ -71,9 +71,8 @@ export function readBlock(
   fileHeader:
     | FileHeader
     | Pick<FileHeader, 'nSpectra' | 'nPoints' | 'yListCount'>,
-  offset?: number
+  offset?: number,
 ): Block {
-
   /* an offset can be assigned manually if desired */
   if (offset) buffer.offset = offset;
 
