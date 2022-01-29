@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.0](https://www.github.com/cheminfo/wdf-parser/compare/v0.1.0...v0.2.0) (2022-01-29)
+
+
+### Features
+
+* Converts time from Windows Filedate in nanoseconds to Unix Epoch in Milliseconds, added tests ([c86efaa](https://www.github.com/cheminfo/wdf-parser/commit/c86efaa9140cf9c8cd958e5a5b5c3b73d5a0547b))
+* Converts time from Windows Filedate in nanoseconds to Unix Epoch in Milliseconds, added tests. Closes https://github.com/cheminfo/wdf-parser/issues/6 ([#8](https://www.github.com/cheminfo/wdf-parser/issues/8)) ([8cadfef](https://www.github.com/cheminfo/wdf-parser/commit/8cadfefbdb4bf9b0bcf2da2d0818f4cb4de5c6fa))
+
+
+### Bug Fixes
+
+* export Wdf interface ([4416399](https://www.github.com/cheminfo/wdf-parser/commit/44163995402e9e2c45cdc9d5b50ca2746c0d006e))
+* exported all modules such that they are documented and can be also imported as single units ([c86efaa](https://www.github.com/cheminfo/wdf-parser/commit/c86efaa9140cf9c8cd958e5a5b5c3b73d5a0547b))
+
 ## 0.1.0 (2022-01-18)
 
 
