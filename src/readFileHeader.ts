@@ -19,6 +19,10 @@ import {
 } from './maps';
 import { readBytes64 } from './utilities';
 
+/**
+ * File Header structure
+ * it is the first 512B of the file, if this is a .wdf file.
+ */
 export interface FileHeader {
   /** used to check whether this is WDF format, if not it errors out */
   signature: 'WDF_BLOCKID_FILE';
@@ -83,7 +87,7 @@ export interface FileHeader {
  * File Header parsing - First 512 bytes. The file header is the first block of the file
  * but it is different from the rest of the block headers. It has many more properties that
  * describe the file, and it is 512B long, as opposed to 16B.
- * @param buffer WDF buffer
+ * @param buffer WDF buffer as IOBuffer i.e `new IOBuffer(file.wdf)`
  * @return File Metadata
  */
 export function readFileHeader(buffer: IOBuffer): FileHeader {

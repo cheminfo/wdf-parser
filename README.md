@@ -34,8 +34,6 @@ const result = parse(arrayBuffer);
 - [x] parse XLIST and YLIST block
 - [x] parse ORIGIN block
 - [ ] parse MAPAREA
-- [ ] other blocks
-- [ ] improve tests
 - [ ] test and write examples on this readme file
 
 ## License

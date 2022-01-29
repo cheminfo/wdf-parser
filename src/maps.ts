@@ -4,7 +4,8 @@ import { IOBuffer } from 'iobuffer';
 map it to a word or human readable output
 @module maps
 */
-/** wdf file is divided in blocks. Each blog has one of these types. */
+
+/** .wdf file is divided in blocks. Each blog has one of these types. */
 export type BlockTypes =
   | 'WDF_BLOCKID_FILE'
   | 'WDF_BLOCKID_DATA'
@@ -49,8 +50,7 @@ export type BlockTypes =
   | 'WDF_STREAM_IS_CSTM';
 
 /**
- * Maps numeric type for block-header or file-header to a semantic label (a name)
- * @export
+ * Maps numeric type for block-header or file-header to a semantic label (a name).
  * @param blockId type code
  * @return Semantic label for block
  */
@@ -144,7 +144,7 @@ export function getBlockTypes(blockId: number): BlockTypes {
   }
 }
 
-/* Unit that the measurement recorded by the instrument/system is supposed to be in */
+/** Unit that the measurement recorded by the instrument/system is supposed to be in */
 export type MeasurementUnits =
   | 'arbitrary units'
   | 'Raman shift (cm-1)'
@@ -173,10 +173,9 @@ export type MeasurementUnits =
   | 'Endmarker';
 
 /**
- * Get descriptive measurement-unit from code
- * @export
+ * Get descriptive measurement-unit from code.
  * @param code
- * @return code mapped to human readable measurement data-unit
+ * @return human readable measurement data-unit
  */
 export function getMeasurementUnits(code: number): MeasurementUnits {
   switch (code) {
@@ -264,8 +263,7 @@ export type ListTypes =
   | 'End Marker';
 
 /**
- * Get descriptive data-unit for an axis from code
- * @export
+ * Get descriptive data-unit for an axis from code see [[`ListTypes`]]
  * @param unit
  * @return unit to use in axis
  */
@@ -326,17 +324,18 @@ export function getListType(unit: number): ListTypes {
   }
 }
 
-/**
- * Descriptive tag for spectra in file (unspecified, single,series, map)
- * @export
- * @param type from the fileheader
- * @returns semantic type
- */
+/** Describes the type of measurement done */
 export type OverallSpectraDescription =
   | 'unspecified'
   | 'single'
   | 'series'
   | 'map';
+
+/**
+ * Descriptive tag for spectra in file (unspecified, single,series, map).
+ * @param type from the fileheader
+ * @returns semantic type
+ */
 export function getOverallSpectraDescription(
   type: number,
 ): OverallSpectraDescription {
@@ -372,8 +371,7 @@ export type ScanType =
 
 /**
  *
- * Retrieves the name of the data collection method used (scan type)
- * @export
+ * Retrieves the name of the data collection method used (scan type).
  * @param scanType the data collection method used
  * @return semantic scan type
  */
@@ -433,8 +431,13 @@ export interface WdfSpectrumFlags {
   cosmicRay: boolean;
   errorCode: number;
 }
-/** Analyzes the information in lower and high part of the 64B number.
-Spectrum flags are details to be aware of when reading the spectra */
+
+/**
+ * Analyzes the information in lower and high part of the 64B number.
+Spectrum flags are details to be aware of when reading the spectra.
+  @param lower lower first 32 bytes
+  @param higher higher 32 bytes
+  @return Object with all the flags*/
 export function getWdfSpectrumFlags(
   lower: number,
   higher: number,
@@ -444,16 +447,10 @@ export function getWdfSpectrumFlags(
     error: (lower & 0b10) !== 0,
     cosmicRay: (lower & 0b100) !== 0,
     errorCode: higher >>> 31,
-  } as WdfSpectrumFlags;
+  };
 }
 
-export interface AppVersion {
-  major: number;
-  minor: number;
-  patch: number;
-  build: number;
-}
-
+/** Flags raised in the experiment */
 export interface FlagParameters {
   /** multiple X list and data block exist*/
   xyxy: boolean;
@@ -497,21 +494,21 @@ export function getFlagParameters(flag: number): FlagParameters {
     fileBackup,
     temporary,
     slice,
-  } as FlagParameters;
+  };
 }
 
 /**
  * Convert a Windows FILETIME to a Javascript Date
  * intervals since January 1, 1601 (UTC)
- * @export
  * @param fileTime - the number of 100ns in Windows Filetime
  * @returns Milliseconds since Epoch
- * from https://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html
+ * [adapted from](https://balrob.blogspot.com/2014/04/windows-filetime-to-javascript-date.html)
  **/
 export function windowsTimeToMs(fileTime: bigint) {
   return Number(fileTime) / 10000 - 11644473600000;
 }
 
+/** Origin blocks contain sets (sub blocks) with this shape */
 export interface HeaderOfSet {
   /** type i.e: Spectral, Spatial, T, P, Checksum, Time */
   type: string;
@@ -526,7 +523,7 @@ export interface HeaderOfSet {
 }
 
 /**
- * Reads the header for each set in an origin block
+ * Reads the header for each set in an origin block.
  * @param buffer
  * @returns header of the set
  */
@@ -540,8 +537,15 @@ export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   return { flag, type, unit, label };
 }
 
+/** WiRE version run in the experiment */
+export interface AppVersion {
+  major: number;
+  minor: number;
+  patch: number;
+  build: number;
+}
 /**
- * Build the semantic versioning
+ * Build the semantic versioning.
  * @param buffer WDF buffer
  * @return Object containing WDF semantic versioning
  */

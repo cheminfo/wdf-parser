@@ -8,17 +8,21 @@ import { isCorrupted } from './utilities';
  * wdf-parser takes a WDF input file as a buffer or array buffer
  * and retrieves an object storing all metadata, data and information from the
  * original "input.wdf" file.
+ * @module parse
  */
 
 export interface Wdf {
+  /** fileHeader header of the WdfFile */
   fileHeader: FileHeader;
+  /** blocks Array of different data blocks (spectra, x coords,...) */
   blocks: Block[];
 }
+
 /**
- * Parses an WDF file
+ * Parses a .wdf Raman file and outputs all the parsed information
  *
  * @param data WDF file buffer
- * @return Object containing all the parsed information from the WDF file
+ * @return JSON Object containing all the parsed information from the WDF file
  */
 export function parse(data: Buffer | ArrayBuffer): Wdf {
   const buffer = new IOBuffer(data);
@@ -26,6 +30,7 @@ export function parse(data: Buffer | ArrayBuffer): Wdf {
 
   let blocks: Block[] = [];
   let blockHeaderTypes: string[] = [];
+
   while (buffer.length > buffer.offset) {
     const block = readBlock(buffer, fileHeader);
     blocks.push(block);

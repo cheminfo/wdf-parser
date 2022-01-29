@@ -122,6 +122,5 @@ lib-esm
 
 # personal tests we don't wish to push
 .__tests__
-
-
+__snapshots__
 docs
