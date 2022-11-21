@@ -24,14 +24,14 @@ export interface Wdf {
  * @param data WDF file buffer
  * @return JSON Object containing all the parsed information from the WDF file
  */
-export function parse(data: Buffer | ArrayBuffer): Wdf {
+export function parse(data: BinaryData): Wdf {
   const buffer = new IOBuffer(data);
   const fileHeader = readFileHeader(buffer);
 
   let blocks: Block[] = [];
   let blockHeaderTypes: string[] = [];
 
-  while (buffer.length > buffer.offset) {
+  while (buffer.offset < buffer.length) {
     const block = readBlock(buffer, fileHeader);
     blocks.push(block);
     blockHeaderTypes.push(block.blockType);

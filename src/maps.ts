@@ -438,15 +438,12 @@ Spectrum flags are details to be aware of when reading the spectra.
   @param lower lower first 32 bytes
   @param higher higher 32 bytes
   @return Object with all the flags*/
-export function getWdfSpectrumFlags(
-  lower: number,
-  higher: number,
-): WdfSpectrumFlags {
+export function getWdfSpectrumFlags(flag: bigint): WdfSpectrumFlags {
   return {
-    saturated: (lower & 1) !== 0,
-    error: (lower & 0b10) !== 0,
-    cosmicRay: (lower & 0b100) !== 0,
-    errorCode: higher >>> 31,
+    saturated: !!(flag & BigInt(1)),
+    error: !!(flag >> BigInt(1)),
+    cosmicRay: !!(flag >> BigInt(2)),
+    errorCode: Number(flag >> BigInt(31)),
   };
 }
 
@@ -476,15 +473,15 @@ export interface FlagParameters {
  * @param flag First byte of the main header
  * @returns The parameters
  */
-export function getFlagParameters(flag: number): FlagParameters {
-  const xyxy = (flag & 1) !== 0;
-  const checkSum = (flag & 2) !== 0;
-  const cosmicRayRemoval = (flag & 4) !== 0;
-  const multitrack = (flag & 8) !== 0;
-  const saturation = (flag & 16) !== 0;
-  const fileBackup = (flag & 32) !== 0;
-  const temporary = (flag & 64) !== 0;
-  const slice = (flag & 128) !== 0;
+export function getFlagParameters(flag: bigint): FlagParameters {
+  const xyxy = !!(flag & BigInt(1));
+  const checkSum = !!(flag >> BigInt(1));
+  const cosmicRayRemoval = !!(flag >> BigInt(2));
+  const multitrack = !!(flag >> BigInt(3));
+  const saturation = !!(flag >> BigInt(4));
+  const fileBackup = !!(flag >> BigInt(4));
+  const temporary = !!(flag >> BigInt(6));
+  const slice = !!(flag >> BigInt(7));
   return {
     xyxy,
     checkSum,
