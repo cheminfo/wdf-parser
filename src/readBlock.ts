@@ -22,8 +22,8 @@ import { FileHeader } from './readFileHeader';
  * @extends BlockHeader
  */
 export interface Block extends BlockHeader {
-  /** Single (array) or Multiple (array of arrays) spectra */
-  spectrum?: DataBlock;
+  /** Single or Multiple spectra (always array of arrays) */
+  spectra?: DataBlock;
   /** x coordinates object */
   xList?: ListBlock;
   /** May be relevant for images */
@@ -107,7 +107,7 @@ export function readBlock(
         }
         spectras32.push(currentSpectra);
       }
-      thisBlock.spectrum = spectras32;
+      thisBlock.spectra = spectras32;
       break;
     }
 
