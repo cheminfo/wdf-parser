@@ -332,7 +332,7 @@ export type OverallSpectraDescription =
   | 'map';
 
 /**
- * Descriptive tag for spectra in file (unspecified, single,series, map).
+ * Get type of measurement done from code see [[`OverallSpectraDescription`]]
  * @param type from the fileheader
  * @returns semantic type
  */
