@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.0](https://github.com/cheminfo/wdf-parser/compare/v0.2.1...v0.3.0) (2022-11-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* release please (#14)
+
+### Features
+
+* release please ([#14](https://github.com/cheminfo/wdf-parser/issues/14)) ([920bf86](https://github.com/cheminfo/wdf-parser/commit/920bf862cbd1b3711575030977e36c903edb5147))
+
 ### [0.2.1](https://www.github.com/cheminfo/wdf-parser/compare/v0.2.0...v0.2.1) (2022-02-25)
 
 
