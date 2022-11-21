@@ -332,7 +332,7 @@ export type OverallSpectraDescription =
   | 'map';
 
 /**
- * Descriptive tag for spectra in file (unspecified, single,series, map).
+ * Get type of measurement done from code see [[`OverallSpectraDescription`]]
  * @param type from the fileheader
  * @returns semantic type
  */
@@ -438,15 +438,12 @@ Spectrum flags are details to be aware of when reading the spectra.
   @param lower lower first 32 bytes
   @param higher higher 32 bytes
   @return Object with all the flags*/
-export function getWdfSpectrumFlags(
-  lower: number,
-  higher: number,
-): WdfSpectrumFlags {
+export function getWdfSpectrumFlags(flag: bigint): WdfSpectrumFlags {
   return {
-    saturated: (lower & 1) !== 0,
-    error: (lower & 0b10) !== 0,
-    cosmicRay: (lower & 0b100) !== 0,
-    errorCode: higher >>> 31,
+    saturated: !!(flag & 1n),
+    error: !!(flag >> 1n),
+    cosmicRay: !!(flag >> 2n),
+    errorCode: Number(flag >> 31n),
   };
 }
 
@@ -476,15 +473,15 @@ export interface FlagParameters {
  * @param flag First byte of the main header
  * @returns The parameters
  */
-export function getFlagParameters(flag: number): FlagParameters {
-  const xyxy = (flag & 1) !== 0;
-  const checkSum = (flag & 2) !== 0;
-  const cosmicRayRemoval = (flag & 4) !== 0;
-  const multitrack = (flag & 8) !== 0;
-  const saturation = (flag & 16) !== 0;
-  const fileBackup = (flag & 32) !== 0;
-  const temporary = (flag & 64) !== 0;
-  const slice = (flag & 128) !== 0;
+export function getFlagParameters(flag: bigint): FlagParameters {
+  const xyxy = !!(flag & 1n);
+  const checkSum = !!(flag >> 1n);
+  const cosmicRayRemoval = !!(flag >> 2n);
+  const multitrack = !!(flag >> 3n);
+  const saturation = !!(flag >> 4n);
+  const fileBackup = !!(flag >> 4n);
+  const temporary = !!(flag >> 6n);
+  const slice = !!(flag >> 7n);
   return {
     xyxy,
     checkSum,
@@ -531,7 +528,7 @@ export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   const typeAndFlag = buffer.readUint32();
   /* >>> because it is unsigned integer */
   const flag = typeAndFlag >>> 31 === 1 ? 'important' : 'alternative';
-  const type = getListType(typeAndFlag & (2 ** 14 - 1));
+  const type = getListType(typeAndFlag & ((1 << 14) - 1));
   const unit = getMeasurementUnits(buffer.readUint32());
   const label = buffer.readChars(16).replace(/\x00/g, '');
   return { flag, type, unit, label };

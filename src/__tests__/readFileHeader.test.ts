@@ -3,14 +3,14 @@ import { join } from 'path';
 
 import { IOBuffer } from 'iobuffer';
 
-import { readFileHeader } from '../readFileHeader';
+import { readFileHeader, FileHeader } from '../readFileHeader';
 
 describe('parse file header', () => {
   it('6x6', () => {
     const wdf = readFileSync(join(__dirname, 'data/6x6.wdf'));
     const wdfBuffer = new IOBuffer(wdf);
     const result = readFileHeader(wdfBuffer);
-    expect(result).toMatchObject({
+    const expected: Partial<FileHeader> = {
       /* it is WDF file and not SPC or otherwise*/
       signature: 'WDF_BLOCKID_FILE',
       /*the version of the WDF used */
@@ -43,7 +43,8 @@ The WMAP block normally defines the physical region.obeys the maparea object. ch
 streamline, linefocus, etc. */
       type: 'map',
       originCount: 5 /* Time, Flags, X, Y, Checksum, Header */,
-    });
+    };
+    expect(result).toMatchObject(expected);
     // test number of keys in result object;
     expect(Object.keys(result)).toHaveLength(30);
   });

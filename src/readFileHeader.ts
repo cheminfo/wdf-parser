@@ -21,7 +21,7 @@ import { readBytes64 } from './utilities';
 
 /**
  * File Header structure
- * it is the first 512B of the file, if this is a .wdf file.
+ * it is the first 512B of the file
  */
 export interface FileHeader {
   /** used to check whether this is WDF format, if not it errors out */
@@ -105,9 +105,7 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
     throw new Error(`Script parses version 1. Found v.${version}`);
   }
   const fileHeaderSize = Number(buffer.readBigUint64());
-  const flags: FlagParameters = getFlagParameters(
-    Number(buffer.readBigUint64()),
-  );
+  const flags: FlagParameters = getFlagParameters(buffer.readBigUint64());
   const uuid: string = getUUId(buffer.readBytes(16));
   const unused0 = Number(buffer.readBigUint64());
   const unused1 = buffer.readUint32();

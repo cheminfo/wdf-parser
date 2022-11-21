@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`parse 6x6 1`] = `
-Object {
-  "blocks": Array [
-    Object {
+{
+  "blocks": [
+    {
       "blockSize": 146176,
       "blockType": "WDF_BLOCKID_DATA",
-      "spectrum": Array [
+      "spectra": [
         Float32Array [
           5339.01318359375,
           5119.0673828125,
@@ -36622,16 +36622,16 @@ Object {
       ],
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 28,
       "blockType": "WDF_BLOCKID_YLIST",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 4084,
       "blockType": "WDF_BLOCKID_XLIST",
       "uuid": "0",
-      "xList": Object {
+      "xList": {
         "type": "spectral",
         "units": "Raman shift (cm-1)",
         "values": Float32Array [
@@ -37653,16 +37653,16 @@ Object {
         ],
       },
     },
-    Object {
+    {
       "blockSize": 2275,
       "blockType": "WDF_BLOCKID_WIREDATA",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 1580,
       "blockType": "WDF_BLOCKID_ORIGIN",
-      "origins": Array [
-        Object {
+      "origins": [
+        {
           "axisOrigins": Float64Array [
             -4501.903563829787,
             -4495.903563829787,
@@ -37706,7 +37706,7 @@ Object {
           "type": "X position",
           "unit": "10-6 metres (um)",
         },
-        Object {
+        {
           "axisOrigins": Float64Array [
             -2474.7475,
             -2474.7475,
@@ -37750,10 +37750,10 @@ Object {
           "type": "Y axis position",
           "unit": "10-6 metres (um)",
         },
-        Object {
+        {
           "flag": "alternative",
           "label": "Time",
-          "spectrumDates": Array [
+          "spectrumDates": [
             1633087309233.5,
             1633087369797.0625,
             1633087430350.8086,
@@ -37794,221 +37794,221 @@ Object {
           "type": "Time",
           "unit": "Endmarker",
         },
-        Object {
+        {
           "flag": "alternative",
           "label": "Flags",
-          "spectrumFlags": Array [
-            Object {
+          "spectrumFlags": [
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
               "saturated": false,
             },
-            Object {
+            {
               "cosmicRay": false,
               "error": false,
               "errorCode": 0,
@@ -38018,7 +38018,7 @@ Object {
           "type": "Bit Flags",
           "unit": "arbitrary units",
         },
-        Object {
+        {
           "flag": "alternative",
           "label": "Checksum",
           "type": "Spectrum Data Checksum",
@@ -38027,57 +38027,57 @@ Object {
       ],
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 78,
       "blockType": "WDF_BLOCKID_COMMENT",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 187320,
       "blockType": "WDF_BLOCKID_MEASUREMENT",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 135104,
       "blockType": "WDF_BLOCKID_WHITELIGHT",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 64,
       "blockType": "WDF_BLOCKID_MAPAREA",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 309,
       "blockType": "WDF_BLOCKID_ZELDAC",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 4100,
       "blockType": "WDF_BLOCKID_BKXLIST",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 8160,
       "blockType": "WDF_BLOCKID_CALIBRATION",
       "uuid": "0",
     },
-    Object {
+    {
       "blockSize": 3519,
       "blockType": "WDF_BLOCKID_INSTRUMENT",
       "uuid": "0",
     },
   ],
-  "fileHeader": Object {
+  "fileHeader": {
     "appName": "WiRE",
-    "appVersion": Object {
+    "appVersion": {
       "build": 6602,
       "major": 4,
       "minor": 4,
       "patch": 0,
     },
     "fileHeaderSize": 512,
-    "flags": Object {
+    "flags": {
       "checkSum": false,
       "cosmicRayRemoval": false,
       "fileBackup": false,
@@ -38087,7 +38087,7 @@ Object {
       "temporary": false,
       "xyxy": false,
     },
-    "free": Array [
+    "free": [
       0,
       0,
       0,
@@ -38100,7 +38100,7 @@ Object {
     "nSpectra": 36,
     "nTracks": 0,
     "originCount": 5,
-    "padding": Array [
+    "padding": [
       0,
       0,
       0,
@@ -38108,7 +38108,7 @@ Object {
       0,
       0,
     ],
-    "reserved": Array [
+    "reserved": [
       0,
       0,
       0,
@@ -38116,7 +38116,7 @@ Object {
     ],
     "scanType": "WdfScanType_Static",
     "signature": "WDF_BLOCKID_FILE",
-    "spare": Array [
+    "spare": [
       0,
       0,
       0,

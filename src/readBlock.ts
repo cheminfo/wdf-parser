@@ -22,8 +22,8 @@ import { FileHeader } from './readFileHeader';
  * @extends BlockHeader
  */
 export interface Block extends BlockHeader {
-  /** Single (array) or Multiple (array of arrays) spectra */
-  spectrum?: DataBlock;
+  /** Single or Multiple spectra (always array of arrays) */
+  spectra?: DataBlock;
   /** x coordinates object */
   xList?: ListBlock;
   /** May be relevant for images */
@@ -34,7 +34,7 @@ export interface Block extends BlockHeader {
 }
 
 /** Raw spectral data */
-export type DataBlock = Float32Array[] | Float32Array;
+export type DataBlock = Float32Array[];
 
 /** XList or YList share this schema */
 export interface ListBlock {
@@ -99,7 +99,7 @@ export function readBlock(
   /* using case a:{} scopes the variables */
   switch (blockType) {
     case 'WDF_BLOCKID_DATA': {
-      let spectras32: Float32Array[] | Float32Array = [];
+      let spectras32: Float32Array[] = [];
       for (let i = 0; i < nSpectra; i++) {
         let currentSpectra = new Float32Array(nPoints);
         for (let j = 0; j < nPoints; j++) {
@@ -107,8 +107,7 @@ export function readBlock(
         }
         spectras32.push(currentSpectra);
       }
-      thisBlock.spectrum =
-        spectras32.length === 1 ? spectras32.flat() : spectras32;
+      thisBlock.spectra = spectras32;
       break;
     }
 
@@ -167,9 +166,7 @@ export function readBlock(
             /* Spectra errors & metadata */
             let spectrumFlags: WdfSpectrumFlags[] = [];
             for (let i = 0; i < nSpectra; i++) {
-              const lower = buffer.readUint32();
-              const higher = buffer.readUint32();
-              spectrumFlags[i] = getWdfSpectrumFlags(lower, higher);
+              spectrumFlags[i] = getWdfSpectrumFlags(buffer.readBigUint64());
             }
             data[set].spectrumFlags = spectrumFlags;
             break;
