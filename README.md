@@ -14,8 +14,8 @@ Parse raman WDF file.
 ## Usage
 
 ```js
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { parse } from 'wdf-parser';
 
 const arrayBuffer = readFileSync(join(__dirname, 'spectra.wdf'));
