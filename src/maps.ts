@@ -440,10 +440,10 @@ Spectrum flags are details to be aware of when reading the spectra.
   @return Object with all the flags*/
 export function getWdfSpectrumFlags(flag: bigint): WdfSpectrumFlags {
   return {
-    saturated: !!(flag & BigInt(1)),
-    error: !!(flag >> BigInt(1)),
-    cosmicRay: !!(flag >> BigInt(2)),
-    errorCode: Number(flag >> BigInt(31)),
+    saturated: !!(flag & 1n),
+    error: !!(flag >> 1n),
+    cosmicRay: !!(flag >> 2n),
+    errorCode: Number(flag >> 31n),
   };
 }
 
@@ -474,14 +474,14 @@ export interface FlagParameters {
  * @returns The parameters
  */
 export function getFlagParameters(flag: bigint): FlagParameters {
-  const xyxy = !!(flag & BigInt(1));
-  const checkSum = !!(flag >> BigInt(1));
-  const cosmicRayRemoval = !!(flag >> BigInt(2));
-  const multitrack = !!(flag >> BigInt(3));
-  const saturation = !!(flag >> BigInt(4));
-  const fileBackup = !!(flag >> BigInt(4));
-  const temporary = !!(flag >> BigInt(6));
-  const slice = !!(flag >> BigInt(7));
+  const xyxy = !!(flag & 1n);
+  const checkSum = !!(flag >> 1n);
+  const cosmicRayRemoval = !!(flag >> 2n);
+  const multitrack = !!(flag >> 3n);
+  const saturation = !!(flag >> 4n);
+  const fileBackup = !!(flag >> 4n);
+  const temporary = !!(flag >> 6n);
+  const slice = !!(flag >> 7n);
   return {
     xyxy,
     checkSum,
@@ -528,7 +528,7 @@ export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   const typeAndFlag = buffer.readUint32();
   /* >>> because it is unsigned integer */
   const flag = typeAndFlag >>> 31 === 1 ? 'important' : 'alternative';
-  const type = getListType(typeAndFlag & (2 ** 14 - 1));
+  const type = getListType(typeAndFlag & ((1 << 14) - 1));
   const unit = getMeasurementUnits(buffer.readUint32());
   const label = buffer.readChars(16).replace(/\x00/g, '');
   return { flag, type, unit, label };
