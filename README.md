@@ -36,6 +36,8 @@ const result = parse(arrayBuffer);
 - [ ] parse MAPAREA
 - [ ] test and write examples on this readme file
 
+Some test files were taken from the a [this Github repo](https://github.com/alchem0x2A/py-wdf-reader).
+
 ## License
 
 [MIT](./LICENSE)

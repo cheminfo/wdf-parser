@@ -1,8 +1,4 @@
 /* eslint no-control-regex: 0 */
-/**
- * Reads a block in wdf file
- * @module readBlock
- */
 import { IOBuffer } from 'iobuffer';
 
 import {
@@ -101,10 +97,7 @@ export function readBlock(
     case 'WDF_BLOCKID_DATA': {
       let spectras32: Float32Array[] = [];
       for (let i = 0; i < nSpectra; i++) {
-        let currentSpectra = new Float32Array(nPoints);
-        for (let j = 0; j < nPoints; j++) {
-          currentSpectra[j] = buffer.readFloat32();
-        }
+        const currentSpectra = buffer.readArray(nPoints, 'float32');
         spectras32.push(currentSpectra);
       }
       thisBlock.spectra = spectras32;
@@ -118,11 +111,7 @@ export function readBlock(
       const units = buffer.readUint32();
       /* only for the XList block nFloats=nPoints. */
       const nXorYPoints = (bodySize - 8) / 4;
-      let valuesXorY = new Float32Array(nXorYPoints);
-
-      for (let i = 0; i < nXorYPoints; i++) {
-        valuesXorY[i] = buffer.readFloat32();
-      }
+      const valuesXorY = buffer.readArray(nXorYPoints, 'float32');
 
       const list = {
         type: getListType(type),
@@ -154,11 +143,7 @@ export function readBlock(
         switch (typeOfSet) {
           case 'X':
           case 'Y': {
-            let os = new Float64Array(nSpectra);
-            for (let i = 0; i < nSpectra; i++) {
-              os[i] = buffer.readFloat64();
-            }
-            data[set].axisOrigins = os;
+            data[set].axisOrigins = buffer.readArray(nSpectra, 'float64');
             break;
           }
 

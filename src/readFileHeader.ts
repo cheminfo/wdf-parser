@@ -2,23 +2,20 @@
 import { IOBuffer } from 'iobuffer';
 
 import {
-  getBlockTypes,
-  BlockTypes,
   getMeasurementUnits,
   MeasurementUnits,
   getOverallSpectraDescription,
   OverallSpectraDescription,
   getScanType,
   ScanType,
-  getUUId,
   getAppVersion,
-  getFlagParameters,
-  FlagParameters,
-  AppVersion,
+  getWdfFlags,
+  WdfFlags,
   windowsTimeToMs,
 } from './maps';
 import { readBytes64 } from './utilities';
 
+const FILE_MAGIC = 0x31464457;
 /**
  * File Header structure
  * it is the first 512B of the file
@@ -30,8 +27,8 @@ export interface FileHeader {
   version: number;
   /** Size of file header block (512B) */
   fileHeaderSize: number;
-  /** flags from the WdfFlags enumeration */
-  flags: FlagParameters;
+  /** Flags raised in the experiment */
+  flags: WdfFlags;
   /** file unique identifier */
   uuid: string;
   unused0: number;
@@ -57,7 +54,7 @@ export interface FileHeader {
   /** application name (utf-8 encoded) */
   appName: string;
   /** application version (major,minor,patch,build) */
-  appVersion: AppVersion;
+  appVersion: { minor: number; major: number; patch: number; build: number };
   /** scan type - WdfScanType enum  */
   scanType: ScanType;
   /** measurement type - WdfType enum  */
@@ -91,22 +88,24 @@ export interface FileHeader {
  * @return File Metadata
  */
 export function readFileHeader(buffer: IOBuffer): FileHeader {
-  /* make sure the offset is 0 to read the file header */
   buffer.offset = 0;
 
-  /* next we determine all the properties included in the file header */
-  const signature: BlockTypes = getBlockTypes(buffer.readUint32());
-  if (signature !== 'WDF_BLOCKID_FILE') {
-    throw new Error(`expected WDF_BLOCKID_FILE, got ${signature}`);
+  let signature;
+
+  if (buffer.readUint32() === FILE_MAGIC) {
+    signature = 'WDF_BLOCKID_FILE' as const;
+  } else {
+    throw new Error('Not a WDF file');
   }
+
   const version: number = buffer.readUint32();
   if (version !== 1) {
     /* we may include try block for 2>version>1.0 */
     throw new Error(`Script parses version 1. Found v.${version}`);
   }
   const fileHeaderSize = Number(buffer.readBigUint64());
-  const flags: FlagParameters = getFlagParameters(buffer.readBigUint64());
-  const uuid: string = getUUId(buffer.readBytes(16));
+  const flags: WdfFlags = getWdfFlags(buffer.readBigUint64());
+  const uuid: string = buffer.readArray(4, 'uint32').join('.');
   const unused0 = Number(buffer.readBigUint64());
   const unused1 = buffer.readUint32();
   const nTracks = buffer.readUint32();
@@ -119,8 +118,7 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const xListCount = buffer.readUint32();
   const originCount = buffer.readUint32();
   const appName: string = buffer.readUtf8(24).replace(/\x00/g, '');
-  /* tested replaceAll('\x00\','') but it is slower */
-  const appVersion: AppVersion = getAppVersion(buffer.readBytes(8));
+  const appVersion = getAppVersion(buffer.readArray(4, 'uint16'));
   const scanType: ScanType = getScanType(buffer.readUint32());
   const type: OverallSpectraDescription = getOverallSpectraDescription(
     buffer.readUint32(),

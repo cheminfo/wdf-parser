@@ -8,7 +8,6 @@ import {
 } from '../maps';
 
 test('getBlockTypes return value at different inputs', (): void => {
-  expect(getBlockTypes(0x31464457)).toBe('WDF_BLOCKID_FILE');
   expect(getBlockTypes(0x41544144)).toBe('WDF_BLOCKID_DATA');
   expect(getBlockTypes(0x54534c59)).toBe('WDF_BLOCKID_YLIST');
   expect(getBlockTypes(0x54534c58)).toBe('WDF_BLOCKID_XLIST');

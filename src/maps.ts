@@ -56,8 +56,6 @@ export type BlockTypes =
  */
 export function getBlockTypes(blockId: number): BlockTypes {
   switch (blockId) {
-    case 0x31464457:
-      return 'WDF_BLOCKID_FILE'; /** holds important file metadata */
     case 0x41544144:
       return 'WDF_BLOCKID_DATA'; /** all spectras, in 32b floating numbers */
     case 0x54534c59:
@@ -448,7 +446,7 @@ export function getWdfSpectrumFlags(flag: bigint): WdfSpectrumFlags {
 }
 
 /** Flags raised in the experiment */
-export interface FlagParameters {
+export interface WdfFlags {
   /** multiple X list and data block exist*/
   xyxy: boolean;
   /** checksum is enabled*/
@@ -473,7 +471,7 @@ export interface FlagParameters {
  * @param flag First byte of the main header
  * @returns The parameters
  */
-export function getFlagParameters(flag: bigint): FlagParameters {
+export function getWdfFlags(flag: bigint): WdfFlags {
   const xyxy = !!(flag & 1n);
   const checkSum = !!(flag >> 1n);
   const cosmicRayRemoval = !!(flag >> 2n);
@@ -534,30 +532,16 @@ export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   return { flag, type, unit, label };
 }
 
-/** WiRE version run in the experiment */
-export interface AppVersion {
-  major: number;
-  minor: number;
-  patch: number;
-  build: number;
-}
 /**
- * Build the semantic versioning.
+ * Get the WiRE version run in the experiment
  * @param buffer WDF buffer
  * @return Object containing WDF semantic versioning
  */
-export function getAppVersion(version: Uint8Array): AppVersion {
-  const [major, minor, patch, build] = new Uint16Array(version.buffer);
-  return { major, minor, patch, build };
-}
-
-/**
- * Calculate the universal identifier (as a string) for files and blocks
- * @param buffer WDF buffer
- * @param Id values for Id in Uint8Array
- * @return uuid as a string
- */
-export function getUUId(Id: Uint8Array): string {
-  let version = new Uint32Array(Id.buffer);
-  return version.join('.');
+export function getAppVersion(version: Uint16Array) {
+  return {
+    major: version[0],
+    minor: version[1],
+    patch: version[2],
+    build: version[3],
+  };
 }
