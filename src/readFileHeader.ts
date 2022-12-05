@@ -2,8 +2,6 @@
 import { IOBuffer } from 'iobuffer';
 
 import {
-  getBlockTypes,
-  BlockTypes,
   getMeasurementUnits,
   MeasurementUnits,
   getOverallSpectraDescription,
@@ -17,6 +15,7 @@ import {
 } from './maps';
 import { readBytes64 } from './utilities';
 
+const FILE_MAGIC = 0x31464457;
 /**
  * File Header structure
  * it is the first 512B of the file
@@ -91,10 +90,14 @@ export interface FileHeader {
 export function readFileHeader(buffer: IOBuffer): FileHeader {
   buffer.offset = 0;
 
-  const signature: BlockTypes = getBlockTypes(buffer.readUint32());
-  if (signature !== 'WDF_BLOCKID_FILE') {
-    throw new Error(`expected WDF_BLOCKID_FILE, got ${signature}`);
+  let signature;
+
+  if (buffer.readUint32() === FILE_MAGIC) {
+    signature = 'WDF_BLOCKID_FILE' as const;
+  } else {
+    throw new Error('Not a WDF file');
   }
+
   const version: number = buffer.readUint32();
   if (version !== 1) {
     /* we may include try block for 2>version>1.0 */

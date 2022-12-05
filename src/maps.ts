@@ -56,8 +56,6 @@ export type BlockTypes =
  */
 export function getBlockTypes(blockId: number): BlockTypes {
   switch (blockId) {
-    case 0x31464457:
-      return 'WDF_BLOCKID_FILE'; /** holds important file metadata */
     case 0x41544144:
       return 'WDF_BLOCKID_DATA'; /** all spectras, in 32b floating numbers */
     case 0x54534c59:

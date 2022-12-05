@@ -53,4 +53,14 @@ describe('read file headers', () => {
       appVersion: { major: 4, minor: 1, patch: 0, build: 4308 },
     });
   });
+  it('Not a WDF file', () => {
+    const buffer = new IOBuffer(readFileSync(join(__dirname, 'data/no.wdf')));
+    expect(() => readFileHeader(buffer)).toThrow('Not a WDF file');
+  });
+  it('Unsupported version', () => {
+    const buffer = new IOBuffer(
+      readFileSync(join(__dirname, 'data/noversion.wdf')),
+    );
+    expect(() => readFileHeader(buffer)).toThrow('Script parses version 1');
+  });
 });
