@@ -1,6 +1,6 @@
 import { IOBuffer } from 'iobuffer';
 
-import { getBlockTypes, getUUId } from './maps';
+import { getBlockTypes } from './maps';
 
 /** Structure for the 16B Block Header */
 export interface BlockHeader {
@@ -26,7 +26,7 @@ export function readBlockHeader(
   if (offset) buffer.offset = offset;
 
   const blockType: string = getBlockTypes(buffer.readUint32());
-  const uuid: string = getUUId(buffer.readBytes(4));
+  const uuid: string = buffer.readUint32().toString(10);
   const blockSize = Number(buffer.readBigUint64()); // Bytes
   /* assign with appropriate type */
   return { blockType, uuid, blockSize };
