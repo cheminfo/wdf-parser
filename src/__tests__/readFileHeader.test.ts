@@ -54,12 +54,12 @@ describe('read file headers', () => {
     });
   });
   it('Not a WDF file', () => {
-    const buffer = new IOBuffer(readFileSync(join(__dirname, 'data/no.wdf')));
+    const buffer = new IOBuffer(new Uint8Array([0x57, 0x44, 0x47, 0x31]));
     expect(() => readFileHeader(buffer)).toThrow('Not a WDF file');
   });
   it('Unsupported version', () => {
     const buffer = new IOBuffer(
-      readFileSync(join(__dirname, 'data/noversion.wdf')),
+      new Uint8Array([0x57, 0x44, 0x46, 0x31, 0x06, 0x00, 0x00, 0x00]),
     );
     expect(() => readFileHeader(buffer)).toThrow('Script parses version 1');
   });
