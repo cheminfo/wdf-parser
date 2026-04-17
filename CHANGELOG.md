@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.0](https://github.com/cheminfo/wdf-parser/compare/v0.3.0...v1.0.0) (2026-04-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate to ESM-only
+
+### Features
+
+* migrate to ESM-only ([4b81a19](https://github.com/cheminfo/wdf-parser/commit/4b81a1940c9f5d962e304519a02282cb2226545f))
+
 ## [0.3.0](https://github.com/cheminfo/wdf-parser/compare/v0.2.1...v0.3.0) (2022-11-21)
 
 
