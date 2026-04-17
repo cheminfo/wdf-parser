@@ -1,6 +1,6 @@
-import { IOBuffer } from 'iobuffer';
+import type { IOBuffer } from 'iobuffer';
 
-import { getBlockTypes } from './maps';
+import { getBlockTypes } from './maps.ts';
 
 /** Structure for the 16B Block Header */
 export interface BlockHeader {

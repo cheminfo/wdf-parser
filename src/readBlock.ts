@@ -1,17 +1,16 @@
-/* eslint no-control-regex: 0 */
-import { IOBuffer } from 'iobuffer';
+import type { IOBuffer } from 'iobuffer';
 
+import type { HeaderOfSet, WdfSpectrumFlags } from './maps.ts';
 import {
-  getMeasurementUnits,
-  getListType,
-  getWdfSpectrumFlags,
-  WdfSpectrumFlags,
-  windowsTimeToMs,
   getHeaderOfSet,
-  HeaderOfSet,
-} from './maps';
-import { BlockHeader, readBlockHeader } from './readBlockHeader';
-import { FileHeader } from './readFileHeader';
+  getListType,
+  getMeasurementUnits,
+  getWdfSpectrumFlags,
+  windowsTimeToMs,
+} from './maps.ts';
+import type { BlockHeader } from './readBlockHeader.ts';
+import { readBlockHeader } from './readBlockHeader.ts';
+import type { FileHeader } from './readFileHeader.ts';
 
 /**
  * Represents the main data unit 'Block', extends [[`BlockHeader`]]
@@ -76,7 +75,7 @@ export function readBlock(
   const { nSpectra, nPoints, yListCount } = fileHeader;
 
   /* set header properties, we further populate it later */
-  let thisBlock: Block = readBlockHeader(buffer);
+  const thisBlock: Block = readBlockHeader(buffer);
 
   /* use part of the block header */
   const { blockSize, blockType } = thisBlock;
@@ -95,7 +94,7 @@ export function readBlock(
   /* using case a:{} scopes the variables */
   switch (blockType) {
     case 'WDF_BLOCKID_DATA': {
-      let spectras32: Float32Array[] = [];
+      const spectras32: Float32Array[] = [];
       for (let i = 0; i < nSpectra; i++) {
         const currentSpectra = buffer.readArray(nPoints, 'float32');
         spectras32.push(currentSpectra);
@@ -129,7 +128,7 @@ export function readBlock(
     }
 
     case 'WDF_BLOCKID_ORIGIN': {
-      let data: OriginBlock[] = [];
+      const data: OriginBlock[] = [];
       const nDataOriginSets = buffer.readUint32();
 
       /* iterate over each of the "subblocks", or sets. */
@@ -149,7 +148,7 @@ export function readBlock(
 
           case 'Flags': {
             /* Spectra errors & metadata */
-            let spectrumFlags: WdfSpectrumFlags[] = [];
+            const spectrumFlags: WdfSpectrumFlags[] = [];
             for (let i = 0; i < nSpectra; i++) {
               spectrumFlags[i] = getWdfSpectrumFlags(buffer.readBigUint64());
             }
@@ -157,7 +156,7 @@ export function readBlock(
             break;
           }
           case 'Time': {
-            let spectrumDates: number[] = [];
+            const spectrumDates: number[] = [];
             for (let i = 0; i < nSpectra; i++) {
               spectrumDates[i] = windowsTimeToMs(buffer.readBigUint64());
             }

@@ -1,8 +1,11 @@
+import type { InputData } from 'iobuffer';
 import { IOBuffer } from 'iobuffer';
 
-import { Block, readBlock } from './readBlock';
-import { readFileHeader, FileHeader } from './readFileHeader';
-import { isCorrupted } from './utilities';
+import type { Block } from './readBlock.ts';
+import { readBlock } from './readBlock.ts';
+import type { FileHeader } from './readFileHeader.ts';
+import { readFileHeader } from './readFileHeader.ts';
+import { isCorrupted } from './utilities.ts';
 
 /**
  * wdf-parser takes a WDF input file as a buffer or array buffer
@@ -24,12 +27,12 @@ export interface Wdf {
  * @param data WDF file buffer
  * @return JSON Object containing all the parsed information from the WDF file
  */
-export function parse(data: BinaryData): Wdf {
+export function parse(data: InputData): Wdf {
   const buffer = new IOBuffer(data);
   const fileHeader = readFileHeader(buffer);
 
-  let blocks: Block[] = [];
-  let blockHeaderTypes: string[] = [];
+  const blocks: Block[] = [];
+  const blockHeaderTypes: string[] = [];
 
   while (buffer.offset < buffer.length) {
     const block = readBlock(buffer, fileHeader);

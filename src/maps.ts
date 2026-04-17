@@ -1,5 +1,4 @@
-/* eslint no-control-regex: 0 */
-import { IOBuffer } from 'iobuffer';
+import type { IOBuffer } from 'iobuffer';
 /** all these functions take a simple numeric input and
 map it to a word or human readable output
 @module maps
@@ -528,7 +527,7 @@ export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
   const flag = typeAndFlag >>> 31 === 1 ? 'important' : 'alternative';
   const type = getListType(typeAndFlag & ((1 << 14) - 1));
   const unit = getMeasurementUnits(buffer.readUint32());
-  const label = buffer.readChars(16).replace(/\x00/g, '');
+  const label = buffer.readChars(16).replaceAll('\u0000', '');
   return { flag, type, unit, label };
 }
 

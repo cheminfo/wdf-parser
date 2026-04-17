@@ -1,7 +1,6 @@
-/* eslint no-control-regex: 0 */
-import { IOBuffer } from 'iobuffer';
+import type { IOBuffer } from 'iobuffer';
 
-import { OverallSpectraDescription } from './maps';
+import type { OverallSpectraDescription } from './maps.ts';
 
 export type ReadBytes64 = (buffer: IOBuffer, nGroups: number) => number[];
 
@@ -15,7 +14,7 @@ export const readBytes64: ReadBytes64 = (buffer, nGroups) => {
   if (nGroups === 0) {
     throw new Error('nGroups has to be different from 0');
   }
-  let groupsOf64: number[] = [];
+  const groupsOf64: number[] = [];
   for (let i = 0; i < nGroups; i++) {
     groupsOf64.push(Number(buffer.readBigUint64()));
   }
@@ -38,7 +37,7 @@ export function isCorrupted(
    they **do not** necessarily appear in a specific order or position
    in wdf file
 */
-  let standardBlocks: string[] = [
+  const standardBlocks: string[] = [
     'WDF_BLOCKID_DATA',
     'WDF_BLOCKID_YLIST',
     'WDF_BLOCKID_XLIST',
@@ -51,14 +50,14 @@ export function isCorrupted(
   }
 
   // here we store any missing block
-  let notFound: string[] = [];
+  const notFound: string[] = [];
 
   // these blocks must exist
-  standardBlocks.forEach((stb) => {
+  for (const stb of standardBlocks) {
     if (!blockTypes.includes(stb)) notFound.push(stb);
-  });
+  }
 
-  if (notFound.length !== 0) {
+  if (notFound.length > 0) {
     throw new Error(`File is corrupt. Missing blocks: ${notFound.join(' ,')}`);
   }
 }

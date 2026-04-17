@@ -29,6 +29,7 @@ const result = parse(arrayBuffer);
 ## Useful Links
 
 ## ToDo
+
 - [x] parse file header
 - [x] parse DATA block
 - [x] parse XLIST and YLIST block
@@ -50,4 +51,3 @@ Some test files were taken from the a [this Github repo](https://github.com/alch
 [codecov-url]: https://codecov.io/gh/cheminfo/wdf-parser
 [download-image]: https://img.shields.io/npm/dm/wdf-parser.svg
 [download-url]: https://www.npmjs.com/package/wdf-parser
-

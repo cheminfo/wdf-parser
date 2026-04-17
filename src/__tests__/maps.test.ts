@@ -1,11 +1,13 @@
+import { expect, test } from 'vitest';
+
 import {
   getBlockTypes,
-  getScanType,
-  getOverallSpectraDescription,
   getListType,
   getMeasurementUnits,
+  getOverallSpectraDescription,
+  getScanType,
   windowsTimeToMs,
-} from '../maps';
+} from '../maps.ts';
 
 test('getBlockTypes return value at different inputs', (): void => {
   expect(getBlockTypes(0x41544144)).toBe('WDF_BLOCKID_DATA');

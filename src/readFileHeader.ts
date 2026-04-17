@@ -1,19 +1,20 @@
-/* eslint no-control-regex: 0 */
-import { IOBuffer } from 'iobuffer';
+import type { IOBuffer } from 'iobuffer';
 
-import {
-  getMeasurementUnits,
+import type {
   MeasurementUnits,
-  getOverallSpectraDescription,
   OverallSpectraDescription,
-  getScanType,
   ScanType,
-  getAppVersion,
-  getWdfFlags,
   WdfFlags,
+} from './maps.ts';
+import {
+  getAppVersion,
+  getMeasurementUnits,
+  getOverallSpectraDescription,
+  getScanType,
+  getWdfFlags,
   windowsTimeToMs,
-} from './maps';
-import { readBytes64 } from './utilities';
+} from './maps.ts';
+import { readBytes64 } from './utilities.ts';
 
 const FILE_MAGIC = 0x31464457;
 /**
@@ -117,7 +118,7 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const yListCount = buffer.readUint32();
   const xListCount = buffer.readUint32();
   const originCount = buffer.readUint32();
-  const appName: string = buffer.readUtf8(24).replace(/\x00/g, '');
+  const appName: string = buffer.readUtf8(24).replaceAll('\u0000', '');
   const appVersion = getAppVersion(buffer.readArray(4, 'uint16'));
   const scanType: ScanType = getScanType(buffer.readUint32());
   const type: OverallSpectraDescription = getOverallSpectraDescription(
@@ -128,8 +129,8 @@ export function readFileHeader(buffer: IOBuffer): FileHeader {
   const units: MeasurementUnits = getMeasurementUnits(buffer.readUint32());
   const laserWavenum = buffer.readFloat32();
   const spare: number[] = readBytes64(buffer, 6);
-  const user: string = buffer.readUtf8(32).replace(/\x00/g, '');
-  const title: string = buffer.readUtf8(160).replace(/\x00/g, '');
+  const user: string = buffer.readUtf8(32).replaceAll('\u0000', '');
+  const title: string = buffer.readUtf8(160).replaceAll('\u0000', '');
   const padding: number[] = readBytes64(buffer, 6);
   const free: number[] = readBytes64(buffer, 4);
   const reserved: number[] = readBytes64(buffer, 4);

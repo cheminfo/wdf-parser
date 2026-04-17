@@ -1,9 +1,11 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { IOBuffer } from 'iobuffer';
+import { describe, expect, it } from 'vitest';
 
-import { readFileHeader, FileHeader } from '../readFileHeader';
+import type { FileHeader } from '../readFileHeader.ts';
+import { readFileHeader } from '../readFileHeader.ts';
 
 describe('read file headers', () => {
   it('simple map', () => {
@@ -29,12 +31,15 @@ describe('read file headers', () => {
       type: 'map',
       originCount: 5 /* Time, Flags, X, Y, Checksum, Header */,
     };
+
     expect(result).toMatchObject(expected);
     expect(Object.keys(result)).toHaveLength(30);
   });
+
   it('single scan', () => {
     const buffer = new IOBuffer(readFileSync(join(__dirname, 'data/sp.wdf')));
     const result = readFileHeader(buffer);
+
     expect(result).toMatchObject({
       title: 'Single scan measurement 1',
       type: 'single',
@@ -53,14 +58,18 @@ describe('read file headers', () => {
       appVersion: { major: 4, minor: 1, patch: 0, build: 4308 },
     });
   });
+
   it('Not a WDF file', () => {
     const buffer = new IOBuffer(new Uint8Array([0x57, 0x44, 0x47, 0x31]));
+
     expect(() => readFileHeader(buffer)).toThrow('Not a WDF file');
   });
+
   it('Unsupported version', () => {
     const buffer = new IOBuffer(
       new Uint8Array([0x57, 0x44, 0x46, 0x31, 0x06, 0x00, 0x00, 0x00]),
     );
+
     expect(() => readFileHeader(buffer)).toThrow('Script parses version 1');
   });
 });
