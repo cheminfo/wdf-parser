@@ -64,8 +64,7 @@ Ex: error, errorCode, saturated, cosmicRay */
 export function readBlock(
   buffer: IOBuffer,
   fileHeader:
-    | FileHeader
-    | Pick<FileHeader, 'nSpectra' | 'nPoints' | 'yListCount'>,
+    FileHeader | Pick<FileHeader, 'nSpectra' | 'nPoints' | 'yListCount'>,
   offset?: number,
 ): Block {
   /* an offset can be assigned manually if desired */
@@ -134,7 +133,7 @@ export function readBlock(
       /* iterate over each of the "subblocks", or sets. */
       for (let set = 0; set < nDataOriginSets; set++) {
         /* each set has a header with same structure */
-        const headerOfSet: HeaderOfSet = getHeaderOfSet(buffer);
+        const headerOfSet: OriginBlock = getHeaderOfSet(buffer);
         data.push(headerOfSet);
 
         const typeOfSet = headerOfSet.label;
@@ -142,7 +141,7 @@ export function readBlock(
         switch (typeOfSet) {
           case 'X':
           case 'Y': {
-            data[set].axisOrigins = buffer.readArray(nSpectra, 'float64');
+            headerOfSet.axisOrigins = buffer.readArray(nSpectra, 'float64');
             break;
           }
 
@@ -152,7 +151,7 @@ export function readBlock(
             for (let i = 0; i < nSpectra; i++) {
               spectrumFlags[i] = getWdfSpectrumFlags(buffer.readBigUint64());
             }
-            data[set].spectrumFlags = spectrumFlags;
+            headerOfSet.spectrumFlags = spectrumFlags;
             break;
           }
           case 'Time': {
@@ -160,7 +159,7 @@ export function readBlock(
             for (let i = 0; i < nSpectra; i++) {
               spectrumDates[i] = windowsTimeToMs(buffer.readBigUint64());
             }
-            data[set].spectrumDates = spectrumDates;
+            headerOfSet.spectrumDates = spectrumDates;
             break;
           }
           default: {

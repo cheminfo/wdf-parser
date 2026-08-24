@@ -323,10 +323,7 @@ export function getListType(unit: number): ListTypes {
 
 /** Describes the type of measurement done */
 export type OverallSpectraDescription =
-  | 'unspecified'
-  | 'single'
-  | 'series'
-  | 'map';
+  'unspecified' | 'single' | 'series' | 'map';
 
 /**
  * Get type of measurement done from code see [[`OverallSpectraDescription`]]
@@ -537,10 +534,6 @@ export function getHeaderOfSet(buffer: IOBuffer): HeaderOfSet {
  * @return Object containing WDF semantic versioning
  */
 export function getAppVersion(version: Uint16Array) {
-  return {
-    major: version[0],
-    minor: version[1],
-    patch: version[2],
-    build: version[3],
-  };
+  const [major = 0, minor = 0, patch = 0, build = 0] = version;
+  return { major, minor, patch, build };
 }

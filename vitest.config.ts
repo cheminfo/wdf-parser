@@ -4,10 +4,10 @@ export default defineConfig({
   test: {
     coverage: {
       include: ['src/**/*.ts'],
+      provider: 'v8',
     },
     snapshotFormat: {
-      maxOutputLength: Infinity,
+      maxOutputLength: Number.MAX_SAFE_INTEGER,
     },
-    // setupFiles: ['vitest.setup.ts'],
   },
 });
