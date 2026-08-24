@@ -11,6 +11,10 @@ Parse raman WDF file.
 
 `$ npm i wdf-parser`
 
+This package is ESM-only. CommonJS consumers need Node.js >= 22.12 or any 24.x
+or later, which support `require()` of synchronous ESM, or can migrate to
+`import`.
+
 ## Usage
 
 ```js
@@ -18,15 +22,42 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'wdf-parser';
 
-const arrayBuffer = readFileSync(join(__dirname, 'spectra.wdf'));
+const data = readFileSync(join(import.meta.dirname, 'spectra.wdf'));
 
-const result = parse(arrayBuffer);
+const result = parse(data);
 // result is an object containing everything that was parsed
 ```
 
+### API
+
+`parse(data)` takes the content of a `.wdf` file (a `Buffer`, `ArrayBuffer`,
+`TypedArray` or `IOBuffer`) and returns a `Wdf` object:
+
+| Property     | Type         | Description                                                             |
+| ------------ | ------------ | ----------------------------------------------------------------------- |
+| `fileHeader` | `FileHeader` | The 512-byte file header: title, user, units, number of spectra, dates. |
+| `blocks`     | `Block[]`    | One entry per block found in the file, in file order.                   |
+
+Each `Block` carries its `blockType`, `blockSize` and `uuid`, plus the parsed
+body when the block type is supported: `spectra` (`Float32Array[]`), `xList` /
+`yList` (`{ type, units, values }`) and `origins`.
+
 ## Examples
 
+```js
+const result = parse(readFileSync('6x6.wdf'));
+
+result.fileHeader.title;
+// 'Simple mapping measurement 1'
+result.fileHeader.type;
+// 'map'
+result.blocks.map((block) => block.blockType);
+// ['WDF_BLOCKID_DATA', 'WDF_BLOCKID_YLIST', 'WDF_BLOCKID_XLIST', ...]
+```
+
 ## Useful Links
+
+- [WDF file format description](./FORMAT.md) — the block layout this parser reads.
 
 ## ToDo
 

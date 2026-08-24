@@ -4,7 +4,7 @@ WDF is a new file format developed by Renishaw, used in the WiRE Software Suite 
 
 Most data is stored in binary format. **wdf-parser** reads the binary file and outputs an object with all the parsed information.
 
-The [WDF format description]() is used for mapping the bits to human readable data.
+The WDF format description is used for mapping the bits to human readable data.
 
 A WDF file is a set of blocks of different type. First the File Header Block followed by others. To this point, the file looks like:
 

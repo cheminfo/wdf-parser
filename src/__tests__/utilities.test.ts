@@ -8,7 +8,7 @@ import { isCorrupted, readBytes64 } from '../utilities.ts';
 
 //test still being written
 test('analyze different group of bytes', () => {
-  const wdf = readFileSync(join(__dirname, 'data/6x6.wdf'));
+  const wdf = readFileSync(join(import.meta.dirname, 'data/6x6.wdf'));
   const buffer = new IOBuffer(wdf);
 
   expect(() => readBytes64(buffer, 0)).toThrow(
